@@ -3,6 +3,7 @@ import { absoluteUrl } from '@/lib/utils';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+import CreateExperimentButton from './CreateExperimentButton';
 
 const Dashboard = ({ }) => {
 
@@ -12,9 +13,7 @@ const Dashboard = ({ }) => {
                 <h1 className='font-bold text-4xl text-gray-50'>
                     My Experiments
                 </h1>
-
-                {/* {(!files || (files?.length < currentPlan.quota)) && <UploadButton isSubscribed={subscriptionPlan.isSubscribed} />}
-        {(files && files?.length >= currentPlan.quota) && <p className='font-medium'>Limit Touched. No more Uploads Possible!</p>} */}
+                <CreateExperimentButton />
             </div>
 
             {/* display all user files */}
