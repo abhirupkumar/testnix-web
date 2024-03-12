@@ -4,10 +4,20 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
 import { Button, buttonVariants } from './ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { HelpCircleIcon } from 'lucide-react';
+import { HelpCircleIcon, Loader2 } from 'lucide-react';
 import { Input } from './ui/input';
 
 const ExperimentForm = ({ handleClose }: { handleClose: (e: React.MouseEvent<HTMLButtonElement>) => void }) => {
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [expId, setExpId] = useState<string>("");
+  const handleCreateExperiment = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (expId == "" || expId == " ") return;
+    setLoading(true);
+    setLoading(false);
+  }
+
   return (<TooltipProvider>
     <div className="flex flex-col space-y-1.5 text-center sm:text-left rounded-t-md bg-zinc-800">
       <div className="flex flex-col items-center justify-center space-y-3 border-b border-gray-100 px-4 py-4 pt-8 sm:px-16">
@@ -27,13 +37,13 @@ const ExperimentForm = ({ handleClose }: { handleClose: (e: React.MouseEvent<HTM
             </TooltipContent>
           </Tooltip>
         </label>
-        <Input type="text" placeholder="checkout-exp-1" />
+        <Input value={expId} onChange={(e) => setExpId(e.target.value)} type="text" placeholder="checkout-exp-1" className='lowercase' />
       </div>
       <div className="flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 flex items-center justify-between gap-2">
         <Button className={buttonVariants({
           variant: "accent"
         })} onClick={handleClose}>Cancel</Button>
-        <Button>Create</Button>
+        <Button onClick={handleCreateExperiment}>Create {loading && <Loader2 className='h-4 w-4 ml-2 animate-spin text-zinc-800' />}</Button>
       </div>
     </form>
   </TooltipProvider>);
