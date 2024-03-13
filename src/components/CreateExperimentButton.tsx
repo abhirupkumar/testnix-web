@@ -1,22 +1,53 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
 import { Button, buttonVariants } from './ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { HelpCircleIcon, Loader2 } from 'lucide-react';
 import { Input } from './ui/input';
+import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { UserRecord } from 'firebase-admin/auth';
+import { db } from '@/lib/firebase';
 
-const ExperimentForm = ({ handleClose }: { handleClose: (e: React.MouseEvent<HTMLButtonElement>) => void }) => {
+const ExperimentForm = ({ user, setIsOpen }: { user: UserRecord, setIsOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
   const [expId, setExpId] = useState<string>("");
+  const handleExpIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setExpId(e.target.value);
+    setError("");
+  }
   const handleCreateExperiment = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (expId == "" || expId == " ") return;
     setLoading(true);
-    setLoading(false);
+    const expRef = doc(db, `experiments/${user.uid}`);
+    const expDoc = await getDoc(expRef);
+    if (expDoc.exists() && expDoc.data().hasOwnProperty(expId)) {
+      setError("Experiment with this Id already exists");
+      setLoading(false);
+    }
+    else {
+      await setDoc(expRef, {
+        [expId]: {
+          variants: [],
+          createdAt: new Date().toISOString(),
+        }
+      }, { merge: true });
+      setIsOpen(false);
+      setLoading(false);
+    }
   }
+
+  useEffect(() => {
+    if (error != "") {
+      setTimeout(() => {
+        setError("");
+      }, 5000);
+    }
+  }, [error]);
 
   return (<TooltipProvider>
     <div className="flex flex-col space-y-1.5 text-center sm:text-left rounded-t-md bg-zinc-800">
@@ -37,26 +68,22 @@ const ExperimentForm = ({ handleClose }: { handleClose: (e: React.MouseEvent<HTM
             </TooltipContent>
           </Tooltip>
         </label>
-        <Input value={expId} onChange={(e) => setExpId(e.target.value)} type="text" placeholder="checkout-exp-1" className='lowercase' />
+        <Input value={expId} onChange={handleExpIdChange} type="text" placeholder="checkout-exp-1" className='lowercase' />
       </div>
       <div className="flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 flex items-center justify-between gap-2">
-        <Button className={buttonVariants({
+        <Button disabled={loading} className={buttonVariants({
           variant: "accent"
-        })} onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleCreateExperiment}>Create {loading && <Loader2 className='h-4 w-4 ml-2 animate-spin text-zinc-800' />}</Button>
+        })} onClick={() => setIsOpen(false)}>Cancel</Button>
+        <Button disabled={loading} onClick={handleCreateExperiment}>Create {loading && <Loader2 className='h-4 w-4 ml-2 animate-spin text-zinc-800' />}</Button>
       </div>
     </form>
+    {error != "" && <div className="text-red-500 text-sm text-center">{error}</div>}
   </TooltipProvider>);
 }
 
-const CreateExperimentButton = () => {
+const CreateExperimentButton = ({ user }: { user: UserRecord }) => {
 
-  const [isOpen, setIsOpen] = useState<boolean>(false)
-
-  const handleClose = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    setIsOpen(false);
-  }
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
     <div>
@@ -73,7 +100,7 @@ const CreateExperimentButton = () => {
           <Button>Create Experiment</Button>
         </DialogTrigger>
         <DialogContent>
-          <ExperimentForm handleClose={handleClose} />
+          <ExperimentForm user={user} setIsOpen={setIsOpen} />
         </DialogContent>
       </Dialog>
     </div>

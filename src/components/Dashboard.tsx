@@ -1,23 +1,41 @@
+"use client";
+
 import { getCurrentUser } from '@/lib/firebase-admin';
 import { absoluteUrl } from '@/lib/utils';
 import { redirect } from 'next/navigation';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import CreateExperimentButton from './CreateExperimentButton';
+import { UserRecord } from 'firebase-admin/auth';
+import { DocumentData, QueryDocumentSnapshot, collection, onSnapshot, query } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
-const Dashboard = ({ }) => {
+const Dashboard = ({ user }: { user: UserRecord }) => {
 
-    return (
-        <main className='mx-auto max-w-7xl md:p-10 p-4'>
-            <div className='mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0'>
-                <h1 className='font-bold text-4xl text-gray-50'>
-                    My Experiments
-                </h1>
-                <CreateExperimentButton />
-            </div>
+  const [experiments, setExperiments] = useState<QueryDocumentSnapshot<DocumentData, DocumentData>[]>([]);
 
-            {/* display all user files */}
-            {/* {files && files?.length !== 0 ? (
+  useEffect(() => {
+    const unsubscribe = onSnapshot(query(collection(db, 'experiments', user.uid)), (snapshot) => {
+      setExperiments(snapshot.docs);
+      console.log(snapshot.docs);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  return (
+    <main className='mx-auto max-w-7xl md:p-10 p-4'>
+      <div className='mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0'>
+        <h1 className='font-bold text-4xl text-gray-50'>
+          My Experiments
+        </h1>
+        <CreateExperimentButton user={user} />
+      </div>
+
+      {/* display all user files */}
+      {/* {files && files?.length !== 0 ? (
         <ul className='mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
           {files
             .sort(
@@ -88,8 +106,8 @@ const Dashboard = ({ }) => {
           <p>Let&apos;s upload your first PDF.</p>
         </div>
       )} */}
-        </main>
-    )
+    </main>
+  )
 }
 
 export default Dashboard;

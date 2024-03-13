@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 
 import { initializeApp, getApps, cert } from "firebase-admin/app";
 import { SessionCookieOptions, getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
 
 export const firebaseApp =
     getApps().find((it) => it.name === "firebase-admin-app") ||
@@ -17,7 +18,10 @@ export const firebaseApp =
         },
         "firebase-admin-app"
     );
+
 export const adminAuth = getAuth(firebaseApp);
+
+export const adminDb = getFirestore(firebaseApp);
 
 export async function isUserAuthenticated(session: string | undefined = undefined) {
     const _session = session ?? (await getSession());
