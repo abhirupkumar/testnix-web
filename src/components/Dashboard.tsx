@@ -6,7 +6,7 @@ import CreateExperimentButton from './CreateExperimentButton';
 import { UserRecord } from 'firebase-admin/auth';
 import { DocumentData, collection, doc, onSnapshot, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Ghost, MessageSquare, Plus } from 'lucide-react';
+import { Code2, MessageSquare, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 const Dashboard = ({ user }: { user: UserRecord }) => {
@@ -56,7 +56,7 @@ const Dashboard = ({ user }: { user: UserRecord }) => {
                   href={`/dashboard/${experiment.experimentId}`}
                   className='flex flex-col gap-2'>
                   <div className='pt-6 px-6 flex w-full items-center justify-between space-x-6'>
-                    <div className='h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500' />
+                    <div className='h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-tr from-[#FD9248] via-[#FA1768] to-[#F001FF]' />
                     <div className='flex-1 truncate'>
                       <div className='flex items-center space-x-3'>
                         <h3 className='truncate text-lg font-medium text-white'>
@@ -82,16 +82,16 @@ const Dashboard = ({ user }: { user: UserRecord }) => {
             ))}
         </ul>
       ) : loading ? (
-        <SkeletonTheme baseColor="#121626" highlightColor="#444">
+        <SkeletonTheme baseColor="#36383e" highlightColor="#444">
           <Skeleton count={3} height={100} className="my-2" />
         </SkeletonTheme>
       ) : (
         <div className='mt-16 flex flex-col items-center gap-2'>
-          <Ghost className='h-8 w-8 text-zinc-50' />
+          <Code2 className='h-8 w-8 text-zinc-50' />
           <h3 className='font-semibold text-xl'>
             Pretty empty around here
           </h3>
-          <p>Let&apos;s upload your first PDF.</p>
+          <p>To get started, create your first experiment.</p>
         </div>
       )}
     </main>
