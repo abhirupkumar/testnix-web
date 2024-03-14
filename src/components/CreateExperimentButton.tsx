@@ -6,7 +6,7 @@ import { Button, buttonVariants } from './ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { HelpCircleIcon, Loader2 } from 'lucide-react';
 import { Input } from './ui/input';
-import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, collectionGroup, doc, getDoc, query, setDoc, where } from 'firebase/firestore';
 import { UserRecord } from 'firebase-admin/auth';
 import { db } from '@/lib/firebase';
 
@@ -23,19 +23,19 @@ const ExperimentForm = ({ user, setIsOpen }: { user: UserRecord, setIsOpen: Reac
     e.preventDefault();
     if (expId == "" || expId == " ") return;
     setLoading(true);
-    const expRef = doc(db, `experiments/${user.uid}`);
-    const expDoc = await getDoc(expRef);
-    if (expDoc.exists() && expDoc.data().hasOwnProperty(expId)) {
+    const userRef = doc(collection(db, 'users'), user.uid);
+    const expRef = collection(userRef, 'experiments');
+    const expDoc = await getDoc(doc(expRef, expId));
+    if (expDoc.exists()) {
       setError("Experiment with this Id already exists");
       setLoading(false);
     }
     else {
-      await setDoc(expRef, {
-        [expId]: {
-          variants: [],
-          createdAt: new Date().toISOString(),
-        }
-      }, { merge: true });
+      await setDoc(doc(expRef, expId), {
+        experimentId: expId,
+        variants: [],
+        createdAt: new Date().toISOString(),
+      });
       setIsOpen(false);
       setLoading(false);
     }
