@@ -26,7 +26,7 @@ export default function RootLayout({
         )}>
         <NextTopLoader color="#FA1768" showSpinner={false} />
         <Toaster />
-        <Layout children={children} />
+        <Layout>{children}</Layout>
       </body>
     </html>
   )
