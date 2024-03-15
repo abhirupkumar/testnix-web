@@ -8,6 +8,7 @@ import { DocumentData, collection, doc, onSnapshot, query } from 'firebase/fires
 import { db } from '@/lib/firebase';
 import { Code2, MessageSquare, Plus } from 'lucide-react';
 import Link from 'next/link';
+import { absoluteUrl } from '@/lib/utils';
 
 const Dashboard = ({ user }: { user: UserRecord }) => {
 
@@ -53,7 +54,7 @@ const Dashboard = ({ user }: { user: UserRecord }) => {
                 key={index}
                 className='col-span-1 divide-y rounded-lg bg-[#121626] border-[1px] border-zinc-800 hover:border-zinc-600'>
                 <Link
-                  href={`/dashboard/${experiment.experimentId}`}
+                  href={absoluteUrl(`/dashboard/${experiment.experimentId}`)}
                   className='flex flex-col gap-2'>
                   <div className='pt-6 px-6 flex w-full items-center justify-between space-x-6'>
                     <div className='h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-tr from-[#FD9248] via-[#FA1768] to-[#F001FF]' />
