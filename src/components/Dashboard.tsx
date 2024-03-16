@@ -52,7 +52,7 @@ const Dashboard = ({ user }: { user: UserRecord }) => {
             .map((experiment, index) => (
               <li
                 key={index}
-                className='col-span-1 divide-y rounded-lg bg-[#121626] border-[1px] border-zinc-800 hover:border-zinc-600'>
+                className='col-span-1 divide-y rounded-lg bg-card border-[1px] border-zinc-800 hover:border-zinc-600'>
                 <Link
                   href={absoluteUrl(`/dashboard/${experiment.experimentId}`)}
                   className='flex flex-col gap-2'>
