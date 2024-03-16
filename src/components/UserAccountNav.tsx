@@ -58,7 +58,7 @@ const UserAccountNav = ({
                                 />
                             </div>
                         ) : (
-                            <AvatarFallback className='!bg-[#121670]'>
+                            <AvatarFallback className='bg-popover'>
                                 <span className='sr-only'>{name}</span>
                                 <Icons.user className='h-4 w-4 text-zinc-50' />
                             </AvatarFallback>
@@ -67,7 +67,7 @@ const UserAccountNav = ({
                 </Button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent className='bg-[#121626] border-[1px] border-zinc-600' align='end'>
+            <DropdownMenuContent className='bg-card border-[1px] border-zinc-500' align='end'>
                 <div className='flex items-center justify-start gap-2 p-2'>
                     <div className='flex flex-col space-y-0.5 leading-none'>
                         {name && (
