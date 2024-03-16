@@ -8,8 +8,8 @@ import { db } from '@/lib/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { HelpCircleIcon } from 'lucide-react';
-import { BarList } from "@tremor/react"
 import Chart from './Chart';
+import BarList from './BarList';
 
 const Experiment = ({ user, experimentId, experimentData }: {
     user: UserRecord,
@@ -33,6 +33,7 @@ const Experiment = ({ user, experimentId, experimentData }: {
     ]
 
     const [experiment, setExperiment] = useState<DocumentData | undefined>(experimentData);
+    // const [data, setData] = useState([]);
 
     useEffect(() => {
         const userRef = doc(collection(db, 'users'), user.uid);
@@ -44,7 +45,6 @@ const Experiment = ({ user, experimentId, experimentData }: {
             unsubscribe();
         };
     }, []);
-
     return (
         <MaxWidthWrapper>
             <h1 className="mb-4 mt-10 text-4xl">Insights for <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FD9248] via-[#FA1768] to-[#F001FF]">{experimentId}</span></h1>
@@ -68,11 +68,10 @@ const Experiment = ({ user, experimentId, experimentData }: {
                                 <p className=" text-right">of which</p>
                             </div>
                             <div className="mt-2 w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-sm">
-                                {/* <>
-                                <p>No data yet.</p>
-                                <a className="text-[#FD9248] underline underline-offset-2" href="#">Get started</a>
-                                </> */}
-                                <BarList color="blue" data={data} className="mt-2" />
+                                {data && data.length > 0 ? <BarList data={data} /> : <>
+                                    <p>No data yet.</p>
+                                    <a className="text-[#FD9248] underline underline-offset-2" href="#">Get started</a>
+                                </>}
                             </div>
                         </CardContent>
                     </Card>
@@ -125,7 +124,7 @@ const Experiment = ({ user, experimentId, experimentData }: {
                 </div>
             </TooltipProvider>
             <Chart />
-        </MaxWidthWrapper>
+        </MaxWidthWrapper >
     )
 }
 
