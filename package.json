@@ -16,7 +16,6 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
-    "@tremor/react": "^3.14.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "firebase": "^10.8.1",
@@ -28,6 +27,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-loading-skeleton": "^3.4.0",
+    "recharts": "^2.12.3",
     "simplebar-react": "^3.2.4",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7"
