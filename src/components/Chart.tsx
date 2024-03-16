@@ -50,7 +50,7 @@ const data = [
 ];
 
 export default function Chart() {
-    const [width, setWidth] = useState(window.innerWidth)
+    const [width, setWidth] = useState(0)
     const handleResize = () => setWidth(window.innerWidth)
     useEffect(() => {
         handleResize()
