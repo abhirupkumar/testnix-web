@@ -4,63 +4,63 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 const chartdata = [
     {
         date: 'Jan 22',
-        SemiAnalysis: 2890,
-        'The Pragmatic Engineer': 2338,
+        'v-1': 1,
+        'v-2': 4,
     },
     {
         date: 'Feb 22',
-        SemiAnalysis: 2756,
-        'The Pragmatic Engineer': 2103,
+        'v-1': 2,
+        'v-2': 4,
     },
     {
         date: 'Mar 22',
-        SemiAnalysis: 3322,
-        'The Pragmatic Engineer': 2194,
+        'v-1': 1,
+        'v-2': 4,
     },
     {
         date: 'Apr 22',
-        SemiAnalysis: 3470,
-        'The Pragmatic Engineer': 2108,
+        'v-1': 2,
+        'v-2': 4,
     },
     {
         date: 'May 22',
-        SemiAnalysis: 3475,
-        'The Pragmatic Engineer': 1812,
+        'v-1': 1,
+        'v-2': 4,
     },
     {
         date: 'Jun 22',
-        SemiAnalysis: 3129,
-        'The Pragmatic Engineer': 1726,
+        'v-1': 4,
+        'v-2': 7,
     },
     {
         date: 'Jul 22',
-        SemiAnalysis: 3490,
-        'The Pragmatic Engineer': 1982,
+        'v-1': 9,
+        'v-2': 3,
     },
     {
         date: 'Aug 22',
-        SemiAnalysis: 2903,
-        'The Pragmatic Engineer': 2012,
+        'v-1': 6,
+        'v-2': 5,
     },
     {
         date: 'Sep 22',
-        SemiAnalysis: 2643,
-        'The Pragmatic Engineer': 2342,
+        'v-1': 3,
+        'v-2': 5,
     },
     {
         date: 'Oct 22',
-        SemiAnalysis: 2837,
-        'The Pragmatic Engineer': 2473,
+        'v-1': 2,
+        'v-2': 1,
     },
     {
         date: 'Nov 22',
-        SemiAnalysis: 2954,
-        'The Pragmatic Engineer': 3848,
+        'v-1': 6,
+        'v-2': 1,
     },
     {
         date: 'Dec 22',
-        SemiAnalysis: 3239,
-        'The Pragmatic Engineer': 3736,
+        'v-1': 9,
+        'v-2': 6,
     },
 ];
 
@@ -77,7 +77,7 @@ export default function Chart() {
                 <AreaChart
                     data={chartdata}
                     index="date"
-                    categories={['SemiAnalysis', 'The Pragmatic Engineer']}
+                    categories={['v-1', 'v-2']}
                     colors={[colorsArray[0], colorsArray[1]]}
                     yAxisWidth={60}
                 />
