@@ -7,9 +7,10 @@ import { DocumentData, collection, doc, onSnapshot, query, where } from 'firebas
 import { db } from '@/lib/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { HelpCircleIcon } from 'lucide-react';
+import { Copy, CopyCheck, HelpCircleIcon } from 'lucide-react';
 import Chart from './Chart';
 import BarList from './BarList';
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const Experiment = ({ user, experimentId, experimentData }: {
     user: UserRecord,
@@ -33,6 +34,7 @@ const Experiment = ({ user, experimentId, experimentData }: {
     ]
 
     const [experiment, setExperiment] = useState<DocumentData | undefined>(experimentData);
+    const [isCopied, setIsCopied] = useState<boolean>(false);
     // const [data, setData] = useState([]);
 
     useEffect(() => {
@@ -45,9 +47,30 @@ const Experiment = ({ user, experimentId, experimentData }: {
             unsubscribe();
         };
     }, []);
+
+    const truncate = (text: string) => {
+        return text.slice(0, 15) + '...';
+    }
+
+    useEffect(() => {
+        if (isCopied) {
+            setTimeout(() => {
+                setIsCopied(false);
+            }, 3000);
+        }
+    }, [isCopied]);
+
     return (
         <MaxWidthWrapper>
-            <h1 className="mb-4 mt-10 text-4xl">Insights for <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FD9248] via-[#FA1768] to-[#F001FF]">{experimentId}</span></h1>
+            <div className='mb-4 mt-10 flex flex-wrap items-center justify-between'>
+                <h1 className="text-4xl">Insights for <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FD9248] via-[#FA1768] to-[#F001FF]">{experimentId}</span></h1>
+                <div className='flex items-center'>
+                    <h2 className='text-xl mr-2'>Experiment Hash:</h2><CopyToClipboard text={experiment?.hash}
+                        onCopy={() => setIsCopied(true)}>
+                        <button className='p-2 my-2 bg-card text-zinc-400 rounded-full flex items-center'>{!isCopied ? <Copy className='w-5 h-5 mr-1' /> : <CopyCheck className='w-5 h-5 mr-1' />}{truncate(experiment?.hash)}</button>
+                    </CopyToClipboard>
+                </div>
+            </div>
             <TooltipProvider>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
                     <Card className="w-full">
@@ -93,8 +116,10 @@ const Experiment = ({ user, experimentId, experimentData }: {
                                 <p className=" text-right">of which</p>
                             </div>
                             <div className="mt-2 w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-sm">
-                                <p>No data yet.</p>
-                                <a className="text-[#FD9248] underline underline-offset-2" href="#">Get started</a>
+                                {data && data.length > 0 ? <BarList data={data} /> : <>
+                                    <p>No data yet.</p>
+                                    <a className="text-[#FD9248] underline underline-offset-2" href="#">Get started</a>
+                                </>}
                             </div>
                         </CardContent>
                     </Card>
@@ -116,8 +141,10 @@ const Experiment = ({ user, experimentId, experimentData }: {
                                 <p className=" text-right">of which</p>
                             </div>
                             <div className="mt-2 w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-sm">
-                                <p>No data yet.</p>
-                                <a className="text-[#FD9248] underline underline-offset-2" href="#">Get started</a>
+                                {data && data.length > 0 ? <BarList data={data} /> : <>
+                                    <p>No data yet.</p>
+                                    <a className="text-[#FD9248] underline underline-offset-2" href="#">Get started</a>
+                                </>}
                             </div>
                         </CardContent>
                     </Card>

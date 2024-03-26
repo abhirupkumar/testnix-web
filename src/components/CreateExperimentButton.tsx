@@ -9,6 +9,13 @@ import { Input } from './ui/input';
 import { addDoc, collection, collectionGroup, doc, getDoc, query, setDoc, where } from 'firebase/firestore';
 import { UserRecord } from 'firebase-admin/auth';
 import { db } from '@/lib/firebase';
+import { v4 as uuidv4 } from 'uuid';
+
+async function generateHashId() {
+  const randomString = Math.random().toString(36).substring(2, 14);
+  const skuId = uuidv4() + randomString;
+  return skuId.toUpperCase();
+}
 
 const ExperimentForm = ({ user, setIsOpen }: { user: UserRecord, setIsOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
 
@@ -31,9 +38,10 @@ const ExperimentForm = ({ user, setIsOpen }: { user: UserRecord, setIsOpen: Reac
       setLoading(false);
     }
     else {
+      const hashId = await generateHashId();
       await setDoc(doc(expRef, expId), {
         experimentId: expId,
-        variants: [],
+        hash: hashId,
         createdAt: new Date().toISOString(),
       });
       setIsOpen(false);
