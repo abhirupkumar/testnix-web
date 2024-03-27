@@ -6,7 +6,7 @@ import { Button, buttonVariants } from './ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { HelpCircleIcon, Loader2 } from 'lucide-react';
 import { Input } from './ui/input';
-import { addDoc, collection, collectionGroup, doc, getDoc, query, setDoc, where } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { UserRecord } from 'firebase-admin/auth';
 import { db } from '@/lib/firebase';
 import { v4 as uuidv4 } from 'uuid';
