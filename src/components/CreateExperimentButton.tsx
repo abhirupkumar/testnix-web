@@ -81,7 +81,10 @@ const ExperimentForm = ({ user, setIsOpen }: { user: UserRecord, setIsOpen: Reac
       <div className="flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 flex items-center justify-between gap-2">
         <Button disabled={loading} className={buttonVariants({
           variant: "accent"
-        })} onClick={() => setIsOpen(false)}>Cancel</Button>
+        })} onClick={(e) => {
+          e.preventDefault();
+          setIsOpen(false)
+        }}>Cancel</Button>
         <Button disabled={loading} onClick={handleCreateExperiment}>Create {loading && <Loader2 className='h-4 w-4 ml-2 animate-spin text-zinc-800' />}</Button>
       </div>
     </form>
