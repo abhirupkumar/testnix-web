@@ -42,11 +42,6 @@ export async function POST(request: NextRequest) {
             }
         }
     }
-    const experimentDoc = await adminDb.collectionGroup("experiments").get();
-    const exp = experimentDoc.docs.map(doc => {
-        if (doc.data().hash == hash)
-            return doc.data()
-    });
     const variantData = await adminDb.collection("experiment-hashes").doc(hash).collection("variants").doc(variantId).get();
     const variant = variantData.data();
     await adminDb.collection("experiment-hashes").doc(hash).collection("variants").doc(variantId).set({
