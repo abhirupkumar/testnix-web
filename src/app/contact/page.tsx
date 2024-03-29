@@ -6,7 +6,7 @@ const Page = () => {
 
     return (
         <div className="flex flex-col justify-center items-center mx-auto py-10 min-h-screen">
-            <h1 className="text-3xl font-semibold mb-6">Contact Us A</h1>
+            <h1 className="text-3xl font-semibold mb-6">Contact Us</h1>
 
             <div className="mt-8">
                 <h2 className="text-2xl font-semibold mb-4">Reach Out Directly</h2>
