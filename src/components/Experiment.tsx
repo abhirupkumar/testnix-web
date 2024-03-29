@@ -60,22 +60,10 @@ const Experiment = ({ user, experimentId, experimentData }: {
         }
     }, [isCopied]);
 
-    const callApi = async () => {
-        const fetchedVariant = await fetch(`http://localhost:3001/api/v1/variant`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ hash: experiment?.hash, variantIds: ["checkout-1-1", "checkout-1-2", "checkout-1-3"], experimentId }),
-        });
-        const variantData = await fetchedVariant.json();
-        console.log(variantData);
-    }
-
     return (
         <MaxWidthWrapper>
             <div className='mb-4 mt-10 flex flex-wrap items-center justify-between'>
-                <h1 className="text-4xl">Insights for <span onClick={() => callApi()} className="text-transparent bg-clip-text bg-gradient-to-r from-[#FD9248] via-[#FA1768] to-[#F001FF]">{experimentId}</span></h1>
+                <h1 className="text-4xl">Insights for <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FD9248] via-[#FA1768] to-[#F001FF]">{experimentId}</span></h1>
                 <div className='flex items-center'>
                     <h2 className='text-xl mr-2'>Experiment Hash:</h2><CopyToClipboard text={experiment?.hash}
                         onCopy={() => setIsCopied(true)}>
