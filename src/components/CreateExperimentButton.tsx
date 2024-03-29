@@ -43,6 +43,7 @@ const ExperimentForm = ({ user, setIsOpen }: { user: UserRecord, setIsOpen: Reac
         experimentId: expId,
         hash: hashId,
         createdAt: new Date().toISOString(),
+        userId: user.uid
       });
       setIsOpen(false);
       setLoading(false);
