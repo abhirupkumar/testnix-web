@@ -46,8 +46,6 @@ export async function POST(request: NextRequest) {
     }
     const variantData = await adminDb.collection("experiment-hashes").doc(hash).collection("variants").doc(variantId).get();
     const variant = variantData.data();
-    // variant.impression = [{"2024-23-9": 2}, {"2024-23-10": 1}]
-    // check if variant.impression has todays date, if it has then increment the vaue else set it to 1
     const today = new Date().toISOString().split('T')[0];
     let impressions = variant?.impressions;
     if (impressions) {
