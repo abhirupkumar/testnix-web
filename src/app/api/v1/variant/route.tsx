@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     if (!hash || !experimentId || !variantIds)
         return NextResponse.json<APIResponse<string>>({ success: false, error: "Invalid request." });
 
-    const variantId = variantIds[Math.floor(Math.random() * variantIds.length)];
+    let variantId = variantIds[Math.floor(Math.random() * variantIds.length)];
     const ipAddress = request.ip || headers().get('x-real-ip') || headers().get('x-forwarded-for') || "";
     if (ipAddress == null || ipAddress == "" || ipAddress == undefined) {
         await adminDb.collection('ip-addresses').doc("development-ip").collection("experiments").doc(hash).set({
@@ -31,8 +31,9 @@ export async function POST(request: NextRequest) {
             });
         }
         else {
-            if (variantIds.includes(ipDoc.data()?.variantId))
-                return NextResponse.json<APIResponse<string>>({ success: true, data: ipDoc.data()?.variantId });
+            if (variantIds.includes(ipDoc.data()?.variantId)) {
+                variantId = ipDoc.data()?.variantId;
+            }
             else {
                 await adminDb.collection('ip-addresses').doc(ipAddress).collection("experiments").doc(hash).set({
                     experimentId: experimentId,
@@ -45,10 +46,26 @@ export async function POST(request: NextRequest) {
     }
     const variantData = await adminDb.collection("experiment-hashes").doc(hash).collection("variants").doc(variantId).get();
     const variant = variantData.data();
+    // variant.impression = [{"2024-23-9": 2}, {"2024-23-10": 1}]
+    // check if variant.impression has todays date, if it has then increment the vaue else set it to 1
+    const today = new Date().toISOString().split('T')[0];
+    let impressions = variant?.impressions;
+    if (impressions) {
+        const index: number = impressions.findIndex((obj: any) => obj.hasOwnProperty(today));
+        if (index !== -1) {
+            impressions[index][today]++;
+        }
+        else {
+            impressions.push({ [today]: 1 });
+        }
+    }
+    else {
+        impressions = [{ [today]: 1 }];
+    }
     await adminDb.collection("experiment-hashes").doc(hash).collection("variants").doc(variantId).set({
-        impressions: variant?.impressions ? variant?.impressions + 1 : 1,
-        clicks: variant?.clicks ? variant?.clicks : 0,
-        conversions: variant?.conversions ? variant?.conversions : 0,
+        impressions: impressions,
+        clicks: variant?.clicks ? variant?.clicks : [],
+        conversions: variant?.conversions ? variant?.conversions : [],
     })
 
     return NextResponse.json<APIResponse<string>>({ success: true, data: variantId });
