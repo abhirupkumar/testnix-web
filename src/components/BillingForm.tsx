@@ -13,8 +13,9 @@ import {
 import { Button } from './ui/button'
 import { Loader2 } from 'lucide-react'
 import { format } from 'date-fns'
-import { createStripeSession } from '@/lib/stripeSession'
 import { useState } from 'react'
+import { absoluteUrl } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
 
 interface BillingFormProps {
     subscriptionPlan: Awaited<
@@ -27,13 +28,21 @@ const BillingForm = ({
 }: BillingFormProps) => {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
 
     const createSession = async () => {
         setIsLoading(true);
-        const { url } = await createStripeSession({ planName: subscriptionPlan.name ?? "Free" });
-
-        if (url) window.location.href = url
-        if (!url) {
+        if (!subscriptionPlan.isSubscribed) return router.push(absoluteUrl('/pricing'));
+        const fetchData = await fetch(absoluteUrl('/api/create-stripe-session'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ planName: subscriptionPlan.name }),
+        })
+        const data = await fetchData.json();
+        if (data.success) window.location.href = data.url
+        if (!data.success) {
             toast({
                 title: 'There was a problem...',
                 description: 'Please try again in a moment',
@@ -67,7 +76,7 @@ const BillingForm = ({
                             ) : null}
                             {subscriptionPlan.isSubscribed
                                 ? 'Manage Subscription'
-                                : 'Upgrade to PRO'}
+                                : 'Upgrade Now'}
                         </Button>
 
                         {subscriptionPlan.isSubscribed ? (

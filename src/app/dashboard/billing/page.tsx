@@ -1,11 +1,11 @@
-import React from 'react'
+import React from 'react';
+import BillingForm from '@/components/BillingForm';
+import { getUserSubscriptionPlan } from '@/lib/stripe';
 
-const Page = () => {
-    return (
-        <div>
+const Page = async () => {
+    const subscriptionPlan = await getUserSubscriptionPlan();
 
-        </div>
-    )
+    return <BillingForm subscriptionPlan={subscriptionPlan} />
 }
 
 export default Page;

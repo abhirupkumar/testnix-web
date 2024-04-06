@@ -1,5 +1,5 @@
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-// import UpgradeButton from '@/components/UpgradeButton'
+import UpgradeButton from '@/components/UpgradeButton ';
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
     Tooltip,
@@ -157,14 +157,7 @@ const Page = async () => {
                                                     href='/dashboard/billing'
                                                     className='py-2 px-4 w-full bg-white text-black rounded-sm'>
                                                     Manage Subscription
-                                                    {/* </Link> : <UpgradeButton /> */}
-                                                </Link> : <Link href={
-                                                    user ? '/dashboard' : '/sign-in'
-                                                }
-                                                    className={buttonVariants({
-                                                        className: 'w-full',
-                                                        variant: 'default',
-                                                    })}>Upgrade</Link>
+                                                </Link> : <UpgradeButton planName={plan} />
                                             ) : (
                                                 <Link
                                                     href='/sign-in'
