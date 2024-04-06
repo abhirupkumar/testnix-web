@@ -1,5 +1,3 @@
-"use client";
-
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,11 +10,9 @@ import { Avatar, AvatarFallback } from './ui/avatar'
 import Image from 'next/image'
 import { Icons } from './Icons'
 import Link from 'next/link'
-import { Gem, Loader2 } from 'lucide-react'
-import { absoluteUrl } from '@/lib/utils';
-import { signOut } from '@/lib/authActions'
-import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Gem } from 'lucide-react'
+import { getUserSubscriptionPlan } from '@/lib/stripe';
+import SignOut from './SignOut';
 
 interface UserAccountNavProps {
     email: string | undefined
@@ -24,22 +20,13 @@ interface UserAccountNavProps {
     imageUrl: string
 }
 
-const UserAccountNav = ({
+const UserAccountNav = async ({
     email,
     imageUrl,
     name,
 }: UserAccountNavProps) => {
 
-    const router = useRouter();
-    const pathname = usePathname();
-    const [loading, setLoading] = useState<boolean>(false);
-
-    const handleSignOut = async () => {
-        setLoading(true);
-        const isOk = await signOut();
-        if (isOk) window.location.href = absoluteUrl(pathname);
-        setLoading(false);
-    }
+    const subscriptionPlan = await getUserSubscriptionPlan();
 
     return (
         <DropdownMenu>
@@ -89,7 +76,7 @@ const UserAccountNav = ({
                     <Link href='/dashboard' className="cursor-pointer">Dashboard</Link>
                 </DropdownMenuItem>
 
-                {/* <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild>
                     {subscriptionPlan?.isSubscribed ? (
                         <Link href='/dashboard/billing' className="cursor-pointer">
                             Manage Subscription
@@ -100,14 +87,11 @@ const UserAccountNav = ({
                             <Gem className='text-blue-500 h-4 w-4 ml-1.5' />
                         </Link>
                     )}
-                </DropdownMenuItem> */}
+                </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem className='cursor-pointer'>
-                    <span onClick={handleSignOut}>Log out</span>
-                    {loading && <Loader2 className='h-4 w-4 ml-2 animate-spin text-zinc-50' />}
-                </DropdownMenuItem>
+                <SignOut></SignOut>
             </DropdownMenuContent>
         </DropdownMenu>
     )

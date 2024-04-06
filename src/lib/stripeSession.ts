@@ -3,14 +3,14 @@ import { collection, doc, getDoc } from "firebase/firestore";
 import { getUserSubscriptionPlan, stripe } from "./stripe";
 import { PLANS } from "@/config/stripe";
 import { db } from "./firebase";
-import { getCurrentUser } from "./firebase-admin";
+import { UserRecord } from "firebase-admin/auth";
 
-export const createStripeSession = async ({ planName }: { planName: string }) => {
+export const createStripeSession = async ({ user, planName }: { user: UserRecord, planName: string }) => {
     const billingUrl = absoluteUrl('/dashboard/billing');
-    const currentUser = await getCurrentUser();
-    if (!currentUser)
-        throw new Error("UNAUTHORIZED");
-    const user = JSON.parse(JSON.stringify(currentUser.toJSON()));
+    // const currentUser = await getCurrentUser();
+    // if (!currentUser)
+    //     throw new Error("UNAUTHORIZED");
+    // const user = JSON.parse(JSON.stringify(currentUser.toJSON()));
     const userId = user.uid;
     if (!userId)
         throw new Error("UNAUTHORIZED");
