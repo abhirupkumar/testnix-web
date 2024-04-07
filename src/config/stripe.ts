@@ -20,9 +20,9 @@ export const PLANS = [
         eventQuota: 50000,
         expQuota: 9,
         price: {
-            amount: 9,
+            amount: 749,
             priceIds: {
-                test: 'price_1P2FAbSHov5T9AqkIrxpi383',
+                test: 'price_1P2qXGSHov5T9Aqk1WnNcnSh',
                 production: '',
             },
         },
@@ -34,9 +34,9 @@ export const PLANS = [
         eventQuota: 10000000000000,
         expQuota: 10000000000000,
         price: {
-            amount: 39,
+            amount: 3999,
             priceIds: {
-                test: 'price_1P2FC1SHov5T9AqkXmKMYX7h',
+                test: 'price_1P2qXvSHov5T9AqkcBTimkgc',
                 production: '',
             },
         },

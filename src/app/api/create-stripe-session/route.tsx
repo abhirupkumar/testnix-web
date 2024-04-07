@@ -43,7 +43,6 @@ export async function POST(request: NextRequest) {
             await stripe.checkout.sessions.create({
                 success_url: billingUrl,
                 cancel_url: billingUrl,
-                payment_method_types: ['card'],
                 mode: 'subscription',
                 line_items: [
                     {
