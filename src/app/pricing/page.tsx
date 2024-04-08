@@ -10,6 +10,7 @@ import {
 import { pricingItems } from '@/config/pricing';
 import { PLANS } from '@/config/stripe';
 import { getCurrentUser } from '@/lib/firebase-admin';
+import { getUserSubscriptionPlan } from '@/lib/stripe';
 import { absoluteUrl, cn } from '@/lib/utils';
 import {
     ArrowRight,
@@ -26,7 +27,7 @@ const Page = async () => {
     if (!currentUser) return redirect(absoluteUrl("/sign-in"));
     const user = JSON.parse(JSON.stringify(currentUser.toJSON()));
 
-    const subscriptionPlan = { isSubscribed: false };
+    const subscriptionPlan = await getUserSubscriptionPlan();
 
     return (
         <>
@@ -153,9 +154,17 @@ const Page = async () => {
                                                     <ArrowRight className='h-5 w-5 ml-1.5' />
                                                 </Link>
                                             ) : user ? (
-                                                subscriptionPlan.isSubscribed ? <Link
+                                                subscriptionPlan.isSubscribed && subscriptionPlan.name == plan ? <Link
                                                     href='/dashboard/billing'
-                                                    className='py-2 px-4 w-full bg-white text-black rounded-sm'>
+                                                    className={buttonVariants({
+                                                        className: 'w-full',
+                                                    })}>
+                                                    Manage Subscription
+                                                </Link> : subscriptionPlan.isSubscribed && subscriptionPlan.name == "Bussiness" ? <Link
+                                                    href='/dashboard/billing'
+                                                    className={buttonVariants({
+                                                        className: 'w-full',
+                                                    })}>
                                                     Manage Subscription
                                                 </Link> : <UpgradeButton planName={plan} />
                                             ) : (

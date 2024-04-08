@@ -59,15 +59,7 @@ export async function POST(request: Request) {
                 session.subscription as string
             )
 
-        // const querySnapshot = await adminDb.collection("users").doc(session.metadata.userId).get();
-        // if (!querySnapshot.exists || !!querySnapshot.data().stripeSubscriptionId) {
-        //     console.log('No matching documents.');
-        //     return new Response(null, { status: 500 });
-        // }
-        // const userDoc = querySnapshot.data()
         await adminDb.collection("users").doc(session.metadata.userId).update({
-            stripeSubscriptionId: subscription.id,
-            stripeCustomerId: subscription.customer as string,
             stripePriceId: subscription.items.data[0]?.price.id,
             stripeCurrentPeriodEnd: new Date(
                 subscription.current_period_end * 1000
