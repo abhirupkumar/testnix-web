@@ -43,7 +43,11 @@ export async function POST(request: NextRequest) {
             await stripe.checkout.sessions.create({
                 success_url: billingUrl,
                 cancel_url: billingUrl,
+                payment_method_types: ["card"],
+                currency: "INR",
                 mode: 'subscription',
+                customer_email: user.email,
+                billing_address_collection: "auto",
                 line_items: [
                     {
                         price: PLANS.find(
