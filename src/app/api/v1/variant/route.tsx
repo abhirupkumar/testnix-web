@@ -1,3 +1,4 @@
+import { PLANS } from "@/config/stripe";
 import { adminDb } from "@/lib/firebase-admin";
 import { APIResponse } from "@/types";
 import { headers } from "next/headers";
@@ -8,6 +9,37 @@ export async function POST(request: NextRequest) {
     const { hash, experimentId, variantIds } = reqBody;
     if (!hash || !experimentId || !variantIds)
         return NextResponse.json<APIResponse<string>>({ success: false, error: "Invalid request." });
+
+    const hashDoc = await adminDb.collection("experiment-hashes").doc(hash).get();
+    if (!hashDoc.exists) {
+        return NextResponse.json<APIResponse<string>>({ success: false, error: "Experiment Not Found." });
+    }
+    const hashData = hashDoc.data();
+    const userDoc = await adminDb.collection("user").doc(hashData?.userId).get();
+    if (!userDoc.exists && !!userDoc.data()) {
+        return NextResponse.json<APIResponse<string>>({ success: false, error: "Experiment Not Found." });
+    }
+    const userData = userDoc.data();
+    const isSubscribed = Boolean(
+        userData?.stripePriceId &&
+        userData?.stripeCurrentPeriodEnd && // 86400000 = 1 day
+        (userData?.stripeCurrentPeriodEnd.toDate()).getTime() + 86_400_000 > Date.now()
+    )
+    const plan = isSubscribed
+        ? PLANS.find((plan) => plan.price.priceIds.test === userData?.stripePriceId)
+        : null
+    if (isSubscribed) {
+        const eventQuota = plan?.eventQuota as number
+        if (eventQuota < 60000 && eventQuota < hashData?.noOfEvents) {
+            return NextResponse.json<APIResponse<string>>({ success: false, error: "[TestNix] Limit Reached!" });
+        }
+    }
+    else {
+        const eventQuota = 1000
+        if (eventQuota < hashData?.noOfEvents) {
+            return NextResponse.json<APIResponse<string>>({ success: false, error: "[TestNix] Limit Reached!" });
+        }
+    }
 
     let variantId = variantIds[Math.floor(Math.random() * variantIds.length)];
     const ipAddress = request.ip || headers().get('x-real-ip') || headers().get('x-forwarded-for') || "";
@@ -64,6 +96,9 @@ export async function POST(request: NextRequest) {
         impressions: impressions,
         clicks: variant?.clicks ? variant?.clicks : [],
         conversions: variant?.conversions ? variant?.conversions : [],
+    })
+    await adminDb.collection("experiment-hashes").doc(hash).update({
+        noOfEvents: hashData?.noOfEvents + 1
     })
 
     return NextResponse.json<APIResponse<string>>({ success: true, data: variantId });

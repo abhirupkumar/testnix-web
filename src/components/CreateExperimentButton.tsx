@@ -45,6 +45,13 @@ const ExperimentForm = ({ user, setIsOpen }: { user: UserRecord, setIsOpen: Reac
         createdAt: new Date().toISOString(),
         userId: user.uid
       });
+      await setDoc(doc(collection(db, "experiment-hashes"), hashId), {
+        experimentId: expId,
+        hash: hashId,
+        createdAt: new Date().toISOString(),
+        userId: user.uid,
+        noOfEvents: 0
+      });
       setIsOpen(false);
       setLoading(false);
     }
