@@ -26,6 +26,8 @@ export async function POST(request: Request) {
     const session = event.data
         .object as Stripe.Checkout.Session
 
+    let sub = null;
+
     if (!session?.metadata?.userId) {
         return new Response(null, {
             status: 200,
@@ -61,6 +63,7 @@ export async function POST(request: Request) {
         //     return new Response(null, { status: 500 });
         // }
         // const userDoc = querySnapshot.data()
+        sub = subscription.customer as string;
         await adminDb.collection("users").doc(session.metadata.userId).update({
             stripeSubscriptionId: subscription.id,
             stripeCustomerId: subscription.customer as string,
@@ -72,5 +75,5 @@ export async function POST(request: Request) {
 
     }
 
-    return new Response(null, { status: 200 })
+    return new Response(sub, { status: 200 })
 }
