@@ -48,7 +48,7 @@ export async function POST(request: Request) {
             });
         }
         catch (err) {
-            return new Response(session.metadata.userId, { status: 200 })
+            return new Response(err instanceof Error ? err.message : 'Unknown Error', { status: 200 })
         }
     }
 
