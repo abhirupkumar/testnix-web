@@ -37,15 +37,19 @@ export async function POST(request: Request) {
             await stripe.subscriptions.retrieve(
                 session.subscription as string
             )
-
-        await adminDb.collection('users').doc(session.metadata.userId).update({
-            stripeSubscriptionId: subscription.id,
-            stripeCustomerId: subscription.customer as string,
-            stripePriceId: subscription.items.data[0]?.price.id,
-            stripeCurrentPeriodEnd: new Date(
-                subscription.current_period_end * 1000
-            ),
-        });
+        try {
+            await adminDb.collection('users').doc(session.metadata.userId).update({
+                stripeSubscriptionId: subscription.id,
+                stripeCustomerId: subscription.customer as string,
+                stripePriceId: subscription.items.data[0]?.price.id,
+                stripeCurrentPeriodEnd: new Date(
+                    subscription.current_period_end * 1000
+                ),
+            });
+        }
+        catch (err) {
+            return new Response(session.metadata.userId, { status: 200 })
+        }
     }
 
     if (event.type === 'invoice.payment_succeeded') {
