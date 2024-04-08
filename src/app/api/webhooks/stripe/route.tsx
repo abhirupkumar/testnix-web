@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     let sub = null;
 
     if (!session?.metadata?.userId) {
-        return new Response(null, {
+        return new Response("hello", {
             status: 200,
         })
     }
