@@ -38,14 +38,14 @@ export async function POST(request: Request) {
                 session.subscription as string
             )
         try {
-            await adminDb.collection('users').doc(session.metadata.userId).update({
+            await adminDb.collection('users').doc(session.metadata.userId).set({
                 stripeSubscriptionId: subscription.id,
                 stripeCustomerId: subscription.customer as string,
                 stripePriceId: subscription.items.data[0]?.price.id,
                 stripeCurrentPeriodEnd: new Date(
                     subscription.current_period_end * 1000
                 ),
-            });
+            }, { merge: true });
         }
         catch (err) {
             return new Response(err instanceof Error ? err.message : 'Unknown Error', { status: 200 })
