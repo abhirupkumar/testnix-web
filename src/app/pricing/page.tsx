@@ -19,12 +19,11 @@ import {
     Minus,
 } from 'lucide-react'
 import Link from 'next/link'
-import { redirect } from 'next/navigation';
 
 const Page = async () => {
 
     const currentUser = await getCurrentUser();
-    const user =  ? JSON.parse(JSON.stringify(currentUser.toJSON())) : null;
+    const user = currentUser ? JSON.parse(JSON.stringify(currentUser.toJSON())) : null;
 
     const subscriptionPlan = await getUserSubscriptionPlan();
 
