@@ -24,8 +24,7 @@ import { redirect } from 'next/navigation';
 const Page = async () => {
 
     const currentUser = await getCurrentUser();
-    if (!currentUser) return redirect(absoluteUrl("/sign-in"));
-    const user = JSON.parse(JSON.stringify(currentUser.toJSON()));
+    const user =  ? JSON.parse(JSON.stringify(currentUser.toJSON())) : null;
 
     const subscriptionPlan = await getUserSubscriptionPlan();
 
