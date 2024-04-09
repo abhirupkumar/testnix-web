@@ -96,5 +96,5 @@ export async function POST(request: Request) {
 
     }
 
-    return new Response(session?.metadata?.userId, { status: 200 })
+    return new Response(null, { status: 200 })
 }
