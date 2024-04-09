@@ -26,17 +26,16 @@ export async function POST(request: Request) {
     const session = event.data
         .object as Stripe.Checkout.Session
 
-    if (!session?.metadata?.userId) {
-        return new Response("userId not present", {
-            status: 200,
-        })
-    }
-
     if (event.type === 'checkout.session.completed') {
         const subscription =
             await stripe.subscriptions.retrieve(
                 session.subscription as string
             )
+        if (!session?.metadata?.userId) {
+            return new Response("userId not present", {
+                status: 200,
+            })
+        }
         try {
             await adminDb.collection('users').doc(session.metadata.userId).set({
                 stripeSubscriptionId: subscription.id,
@@ -59,7 +58,14 @@ export async function POST(request: Request) {
                 session.subscription as string
             )
 
-        await adminDb.collection("users").doc(session.metadata.userId).update({
+        const querySnapshot = await adminDb.collection('users').where('stripeSubscriptionId', '==', subscription.id).get();
+        if (querySnapshot.empty) {
+            return new Response("The given Subscription Id is not present.", {
+                status: 200,
+            })
+        }
+        const user = querySnapshot.docs[0];
+        await adminDb.collection("users").doc(user.id).update({
             stripePriceId: subscription.items.data[0]?.price.id,
             stripeCurrentPeriodEnd: new Date(
                 subscription.current_period_end * 1000
@@ -90,5 +96,5 @@ export async function POST(request: Request) {
 
     }
 
-    return new Response(session.metadata.userId, { status: 200 })
+    return new Response(session?.metadata?.userId, { status: 200 })
 }
