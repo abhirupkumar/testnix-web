@@ -52,34 +52,11 @@ export async function POST(request: Request) {
     }
 
     if (event.type === 'invoice.payment_succeeded') {
-        // Retrieve the subscription details from Stripe.
         const subscription =
             await stripe.subscriptions.retrieve(
                 session.subscription as string
             )
 
-        const querySnapshot = await adminDb.collection('users').where('stripeSubscriptionId', '==', subscription.id).get();
-        if (querySnapshot.empty) {
-            return new Response("The given Subscription Id is not present.", {
-                status: 200,
-            })
-        }
-        const user = querySnapshot.docs[0];
-        await adminDb.collection("users").doc(user.id).update({
-            stripePriceId: subscription.items.data[0]?.price.id,
-            stripeCurrentPeriodEnd: new Date(
-                subscription.current_period_end * 1000
-            ),
-        })
-
-    }
-
-    if (event.type === 'customer.subscription.updated') {
-        // Retrieve the subscription details from Stripe.
-        const subscription =
-            await stripe.subscriptions.retrieve(
-                session.subscription as string
-            )
         const querySnapshot = await adminDb.collection('users').where('stripeSubscriptionId', '==', subscription.id).get();
         if (querySnapshot.empty) {
             return new Response("The given Subscription Id is not present.", {
