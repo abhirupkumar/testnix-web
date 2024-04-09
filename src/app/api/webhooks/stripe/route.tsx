@@ -68,5 +68,21 @@ export async function POST(request: Request) {
 
     }
 
+    if (event.type === 'customer.subscription.updated') {
+        // Retrieve the subscription details from Stripe.
+        const subscription =
+            await stripe.subscriptions.retrieve(
+                session.subscription as string
+            )
+
+        await adminDb.collection("users").doc(session.metadata.userId).update({
+            stripePriceId: subscription.items.data[0]?.price.id,
+            stripeCurrentPeriodEnd: new Date(
+                subscription.current_period_end * 1000
+            ),
+        })
+
+    }
+
     return new Response(session.metadata.userId, { status: 200 })
 }
