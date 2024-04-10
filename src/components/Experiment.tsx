@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { Copy, CopyCheck, HelpCircleIcon, Loader2 } from 'lucide-react';
 import Chart from './Chart';
-// import BarList from './BarList';
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { BarList } from '@tremor/react';
 
