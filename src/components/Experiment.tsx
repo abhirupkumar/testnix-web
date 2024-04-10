@@ -7,10 +7,11 @@ import { DocumentData, collection, doc, onSnapshot, query, where } from 'firebas
 import { db } from '@/lib/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { Copy, CopyCheck, HelpCircleIcon } from 'lucide-react';
+import { Copy, CopyCheck, HelpCircleIcon, Loader2 } from 'lucide-react';
 import Chart from './Chart';
-import BarList from './BarList';
+// import BarList from './BarList';
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { BarList } from '@tremor/react';
 
 const Experiment = ({ user, experimentId, experimentData }: {
     user: UserRecord,
@@ -18,29 +19,64 @@ const Experiment = ({ user, experimentId, experimentData }: {
     experimentData: DocumentData | undefined
 }) => {
 
-    const data = [
-        {
-            name: 'Twitter',
-            value: 456,
-        },
-        {
-            name: 'Google',
-            value: 351,
-        },
-        {
-            name: 'GitHub',
-            value: 271,
-        },
-    ]
-
+    const [loading, setLoading] = useState<Boolean>(true);
     const [experiment, setExperiment] = useState<DocumentData | undefined>(experimentData);
+    const [variants, setVariants] = useState<DocumentData[]>([]);
     const [isCopied, setIsCopied] = useState<boolean>(false);
-    // const [data, setData] = useState([]);
+    const [impressions, setImpressions] = useState<{ name: string; value: number; }[]>([]);
+    const [clicks, setClicks] = useState<{ name: string; value: number; }[]>([]);
+    const [conversions, setConversions] = useState<{ name: string; value: number; }[]>([]);
 
     useEffect(() => {
         const userRef = doc(collection(db, 'users'), user.uid);
         const unsubscribe = onSnapshot(query(collection(userRef, 'experiments'), where("experimentId", "==", experimentId)), (snapshot) => {
             setExperiment(snapshot.docs[0].data());
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, []);
+
+    useEffect(() => {
+        const expRef = doc(collection(db, 'experiment-hashes'), experiment?.hash);
+        const unsubscribe = onSnapshot(query(collection(expRef, 'variants')), (snapshot) => {
+            const tempData = snapshot.docs.map(doc => ({ name: doc.id, ...doc.data() }));
+            setVariants(tempData);
+            const temp2Data = tempData.map((variant: DocumentData) => {
+                let impressions = 0;
+                variant.impressions.map((imp: any) => {
+                    impressions += (Object.values(imp)[0] as number);
+                });
+                return {
+                    name: variant.name,
+                    value: impressions
+                }
+            });
+            setImpressions(temp2Data);
+            const temp3Data = tempData.map((variant: DocumentData) => {
+                let clicks = 0;
+                variant.clicks.map((imp: any) => {
+                    clicks += (Object.values(imp)[0] as number);
+                });
+                return {
+                    name: variant.name,
+                    value: clicks
+                }
+            });
+            setClicks(temp3Data);
+            const temp4Data = tempData.map((variant: DocumentData) => {
+                let conversions = 0;
+                variant.conversions.map((imp: any) => {
+                    conversions += (Object.values(imp)[0] as number);
+                });
+                return {
+                    name: variant.name,
+                    value: conversions
+                }
+            });
+            setConversions(temp4Data);
+            setLoading(false);
         });
 
         return () => {
@@ -83,19 +119,18 @@ const Experiment = ({ user, experimentId, experimentData }: {
                                     The amount of times your visitors have seen your variants.
                                 </TooltipContent>
                             </Tooltip></CardTitle>
-                            <CardDescription><strong className='text-3xl'>0</strong> Total</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="flex w-full flex-row justify-between items-center">
                                 <p className="">Variant</p>
-                                <p className=" text-right">of which</p>
+                                <p className=" text-right">Count</p>
                             </div>
-                            <div className="mt-2 w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-sm">
-                                {data && data.length > 0 ? <BarList data={data} /> : <>
+                            {loading ? <Loader2 className='mx-auto h-10 w-10 animate-spin' /> : <div className="mt-2 w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-sm">
+                                {impressions && impressions.length > 0 ? <BarList data={impressions} /> : <>
                                     <p>No data yet.</p>
                                     <a className="text-[#FD9248] underline underline-offset-2" href="#">Get started</a>
                                 </>}
-                            </div>
+                            </div>}
                         </CardContent>
                     </Card>
                     <Card className="w-full">
@@ -108,19 +143,18 @@ const Experiment = ({ user, experimentId, experimentData }: {
                                     The amount of times your visitors clicked a variant.
                                 </TooltipContent>
                             </Tooltip></CardTitle>
-                            <CardDescription><strong className='text-3xl'>0</strong> Total</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="flex w-full flex-row justify-between items-center">
                                 <p className="">Variant</p>
-                                <p className=" text-right">of which</p>
+                                <p className=" text-right">Count</p>
                             </div>
-                            <div className="mt-2 w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-sm">
-                                {data && data.length > 0 ? <BarList data={data} /> : <>
+                            {loading ? <Loader2 className='mx-auto h-10 w-10 animate-spin' /> : <div className="mt-2 w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-sm">
+                                {clicks && clicks.length > 0 ? <BarList data={clicks} /> : <>
                                     <p>No data yet.</p>
                                     <a className="text-[#FD9248] underline underline-offset-2" href="#">Get started</a>
                                 </>}
-                            </div>
+                            </div>}
                         </CardContent>
                     </Card>
                     <Card className="w-full">
@@ -133,24 +167,23 @@ const Experiment = ({ user, experimentId, experimentData }: {
                                     The amount of times your visitors have performed a desired action.
                                 </TooltipContent>
                             </Tooltip></CardTitle>
-                            <CardDescription><strong className='text-3xl'>0</strong> Total</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="flex w-full flex-row justify-between items-center">
                                 <p className="">Variant</p>
-                                <p className=" text-right">of which</p>
+                                <p className=" text-right">Count</p>
                             </div>
-                            <div className="mt-2 w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-sm">
-                                {data && data.length > 0 ? <BarList data={data} /> : <>
+                            {loading ? <Loader2 className='mx-auto h-10 w-10 animate-spin' /> : <div className="mt-2 w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-sm">
+                                {conversions && conversions.length > 0 ? <BarList data={conversions} /> : <>
                                     <p>No data yet.</p>
                                     <a className="text-[#FD9248] underline underline-offset-2" href="#">Get started</a>
                                 </>}
-                            </div>
+                            </div>}
                         </CardContent>
                     </Card>
                 </div>
             </TooltipProvider>
-            <Chart />
+            <Chart variants={variants} />
         </MaxWidthWrapper >
     )
 }

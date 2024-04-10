@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+.tremor-BarList-bar {
+  --tw-bg-opacity: 1 !important;
+  border-radius: 4px !important;
+}
+
+.text-tremor-content-emphasis {
+  --tw-text-opacity: 0 !important;
+  color: white !important;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }
