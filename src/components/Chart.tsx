@@ -5,69 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { DocumentData } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
-const chartdata = [
-    {
-        date: 'Jan 22',
-        'v-1': 1,
-        'v-2': 4,
-    },
-    {
-        date: 'Feb 22',
-        'v-1': 2,
-        'v-2': 4,
-    },
-    {
-        date: 'Mar 22',
-        'v-1': 1,
-        'v-2': 4,
-    },
-    {
-        date: 'Apr 22',
-        'v-1': 2,
-        'v-2': 4,
-    },
-    {
-        date: 'May 22',
-        'v-1': 1,
-        'v-2': 4,
-    },
-    {
-        date: 'Jun 22',
-        'v-1': 4,
-        'v-2': 7,
-    },
-    {
-        date: 'Jul 22',
-        'v-1': 9,
-        'v-2': 3,
-    },
-    {
-        date: 'Aug 22',
-        'v-1': 6,
-        'v-2': 5,
-    },
-    {
-        date: 'Sep 22',
-        'v-1': 3,
-        'v-2': 5,
-    },
-    {
-        date: 'Oct 22',
-        'v-1': 2,
-        'v-2': 1,
-    },
-    {
-        date: 'Nov 22',
-        'v-1': 6,
-        'v-2': 1,
-    },
-    {
-        date: 'Dec 22',
-        'v-1': 9,
-        'v-2': 6,
-    },
-];
-
 const colorsArray = ["red", "blue", "yellow", "green", "orange", "amber", "cyan", "lime", "emerald", "teal", "sky", "indigo", "violet", "purple", "fuchsia", "pink", "rose", "slate", "gray", "zinc", "neutral", "stone",];
 
 export default function Chart({ variants }: { variants: DocumentData[] }) {
@@ -78,13 +15,28 @@ export default function Chart({ variants }: { variants: DocumentData[] }) {
         let imps: any[] = [];
         variants.map((variant: DocumentData) => {
             variant.impressions.map((imp: any) => {
-                const key = Object.keys(imp)[0];
+                // remove the year from the key
+                const key = Object.keys(imp)[0].split("-").slice(1).join("-");
                 imps.push({ date: key, [variant.name]: Object.values(imp)[0] as number });
             });
         });
 
-        setImpressions(imps);
-        console.log(imps)
+        const dates = imps.map(imp => imp.date);
+        let newImps: any[] = [];
+        dates.forEach(date => {
+            let obj: any = { date };
+            variants.forEach(variant => {
+                const found = imps.find(imp => imp.date === date && imp[variant.name]);
+                if (found) {
+                    obj[variant.name] = found[variant.name];
+                } else
+                    obj[variant.name] = 0;
+            });
+            newImps.push(obj);
+        });
+        newImps.sort((a, b) => a.date.localeCompare(b.date));
+        setImpressions(newImps);
+        console.log(newImps)
     }, [variants]);
 
     return (
@@ -97,7 +49,7 @@ export default function Chart({ variants }: { variants: DocumentData[] }) {
                     data={impressions}
                     index="date"
                     categories={variants.map(variant => variant.name)}
-                    colors={[colorsArray[0], colorsArray[1]]}
+                    colors={colorsArray.filter((color, index) => index < variants.length)}
                     yAxisWidth={60}
                 />
             </CardContent>

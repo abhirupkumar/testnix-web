@@ -24,7 +24,7 @@ export const pricingItems = [
                     'Detailed insights without any cookies. See our privacy commitment about how we provide highly actionable insights without spying on users.',
             },
             {
-                text: 'Only 30 Days view History',
+                text: 'Full History',
             },
             {
                 text: 'Automatic winner selection',
@@ -71,7 +71,7 @@ export const pricingItems = [
                     'Detailed insights without any cookies. See our privacy commitment about how we provide highly actionable insights without spying on users.',
             },
             {
-                text: 'Only 90 Days view History',
+                text: 'Full History',
             },
             {
                 text: 'Automatic winner selection',
@@ -117,7 +117,7 @@ export const pricingItems = [
                     'Detailed insights without any cookies. See our privacy commitment about how we provide highly actionable insights without spying on users.',
             },
             {
-                text: 'Only 90 Days view History',
+                text: 'Full History',
             },
             {
                 text: 'Automatic winner selection',
