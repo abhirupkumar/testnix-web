@@ -56,10 +56,10 @@ export default function Home() {
               <div className='mt-16 flow-root sm:mt-24'>
                 <div className='-m-2 rounded-xl bg-gray-500/25 p-1.5 ring-2 ring-inset ring-gray-900/20 lg:-m-4 lg:rounded-2xl lg:p-3'>
                   <Image
-                    src='/dashboard-preview.png'
-                    alt='product preview'
-                    width={1575}
-                    height={1000}
+                    src='/experiment-preview.png'
+                    alt='uploading preview'
+                    width={1580}
+                    height={1025}
                     quality={100}
                     className='bg-background rounded-xl lg:rounded-2xl'
                   />
@@ -148,9 +148,9 @@ export default function Home() {
           <div className='mt-16 flow-root sm:mt-24'>
             <div className='-m-2 rounded-xl bg-gray-500/25 p-1.5 ring-1 ring-inset ring-gray-900/20 lg:-m-4 lg:rounded-2xl lg:p-3'>
               <Image
-                src='/experiment-preview.png'
-                alt='uploading preview'
-                width={1575}
+                src='/dashboard-preview.png'
+                alt='product preview'
+                width={2230}
                 height={1000}
                 quality={100}
                 className='bg-background rounded-xl lg:rounded-2xl'
