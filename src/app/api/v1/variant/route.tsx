@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json<APIResponse<string>>({ success: false, error: "Experiment Not Found." });
     }
     const hashData = hashDoc.data();
-    const userDoc = await adminDb.collection("user").doc(hashData?.userId).get();
+    const userDoc = await adminDb.collection("users").doc(hashData?.userId).get();
     if (!userDoc.exists && !!userDoc.data()) {
         return NextResponse.json<APIResponse<string>>({ success: false, error: "Experiment Not Found." });
     }

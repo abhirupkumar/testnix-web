@@ -148,7 +148,7 @@ export default function Home() {
           <div className='mt-16 flow-root sm:mt-24'>
             <div className='-m-2 rounded-xl bg-gray-500/25 p-1.5 ring-1 ring-inset ring-gray-900/20 lg:-m-4 lg:rounded-2xl lg:p-3'>
               <Image
-                src='/file-upload-preview.png'
+                src='/experiment-preview.png'
                 alt='uploading preview'
                 width={1575}
                 height={1000}
