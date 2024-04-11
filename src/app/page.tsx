@@ -58,8 +58,8 @@ export default function Home() {
                   <Image
                     src='/experiment-preview.png'
                     alt='uploading preview'
-                    width={1580}
-                    height={1025}
+                    width={883}
+                    height={638}
                     quality={100}
                     className='bg-background rounded-xl lg:rounded-2xl'
                   />
@@ -150,8 +150,8 @@ export default function Home() {
               <Image
                 src='/dashboard-preview.png'
                 alt='product preview'
-                width={2231}
-                height={1000}
+                width={1366}
+                height={641}
                 quality={100}
                 className='bg-background rounded-xl lg:rounded-2xl'
               />
