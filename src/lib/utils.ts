@@ -39,7 +39,7 @@ export function constructMetadata({
       ]
     },
     icons,
-    metadataBase: new URL('https://trckify.live'),
+    metadataBase: new URL('https://testnix.vercel.app'),
     ...(noIndex && {
       robots: {
         index: false,
