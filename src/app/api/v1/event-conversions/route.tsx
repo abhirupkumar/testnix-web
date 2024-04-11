@@ -27,17 +27,31 @@ export async function POST(request: NextRequest) {
     const plan = isSubscribed
         ? PLANS.find((plan) => plan.price.priceIds.test === userData?.stripePriceId)
         : null
-    if (isSubscribed) {
-        const eventQuota = plan?.eventQuota as number
-        if (eventQuota < 60000 && eventQuota < hashData?.noOfEvents) {
-            return NextResponse.json<APIResponse<string>>({ success: false, error: "[TestNix] Limit Reached!" });
+    const thisMonth = (new Date()).toISOString().split('-').slice(0, 2).join('-');
+    let noOfEvents = hashData?.noOfEvents;
+    if (noOfEvents) {
+        const index: number = noOfEvents.findIndex((obj: any) => obj.hasOwnProperty(thisMonth));
+        if (index !== -1) {
+            if (isSubscribed) {
+                const eventQuota = plan?.eventQuota as number
+                if (eventQuota < 60000 && eventQuota < noOfEvents[index][thisMonth]) {
+                    return NextResponse.json<APIResponse<string>>({ success: false, error: "[TestNix] Limit Reached!" });
+                }
+            }
+            else {
+                const eventQuota = 1000
+                if (eventQuota < noOfEvents[index][thisMonth]) {
+                    return NextResponse.json<APIResponse<string>>({ success: false, error: "[TestNix] Limit Reached!" });
+                }
+            }
+            noOfEvents[index][thisMonth]++;
+        }
+        else {
+            noOfEvents.push({ [thisMonth]: 1 });
         }
     }
     else {
-        const eventQuota = 1000
-        if (eventQuota < hashData?.noOfEvents) {
-            return NextResponse.json<APIResponse<string>>({ success: false, error: "[TestNix] Limit Reached!" });
-        }
+        noOfEvents = [{ [thisMonth]: 1 }];
     }
     const variantData = await adminDb.collection("experiment-hashes").doc(hash).collection("variants").doc(variantId).get();
     const variant = variantData.data();
@@ -61,7 +75,7 @@ export async function POST(request: NextRequest) {
         conversions: conversions,
     })
     await adminDb.collection("experiment-hashes").doc(hash).update({
-        noOfEvents: hashData?.noOfEvents + 1
+        noOfEvents: noOfEvents
     })
 
     return NextResponse.json<APIResponse<string>>({ success: true, data: "Conversions recorded." });

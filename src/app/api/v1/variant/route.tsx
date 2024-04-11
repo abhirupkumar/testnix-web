@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
     if (!hash || !experimentId || !variantIds)
         return NextResponse.json<APIResponse<string>>({ success: false, error: "Invalid request." });
 
+    // check if the experiment exists
     const hashDoc = await adminDb.collection("experiment-hashes").doc(hash).get();
     if (!hashDoc.exists) {
         return NextResponse.json<APIResponse<string>>({ success: false, error: "Experiment Not Found." });
@@ -20,6 +21,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json<APIResponse<string>>({ success: false, error: "Experiment Not Found." });
     }
     const userData = userDoc.data();
+    // check if the experiment user is subscribed or not
     const isSubscribed = Boolean(
         userData?.stripePriceId &&
         userData?.stripeCurrentPeriodEnd && // 86400000 = 1 day
@@ -28,17 +30,33 @@ export async function POST(request: NextRequest) {
     const plan = isSubscribed
         ? PLANS.find((plan) => plan.price.priceIds.test === userData?.stripePriceId)
         : null
-    if (isSubscribed) {
-        const eventQuota = plan?.eventQuota as number
-        if (eventQuota < 60000 && eventQuota < hashData?.noOfEvents) {
-            return NextResponse.json<APIResponse<string>>({ success: false, error: "[TestNix] Limit Reached!" });
+
+    //check the event limit is exceed or not
+    const thisMonth = (new Date()).toISOString().split('-').slice(0, 2).join('-');
+    let noOfEvents = hashData?.noOfEvents;
+    if (noOfEvents) {
+        const index: number = noOfEvents.findIndex((obj: any) => obj.hasOwnProperty(thisMonth));
+        if (index !== -1) {
+            if (isSubscribed) {
+                const eventQuota = plan?.eventQuota as number
+                if (eventQuota < 60000 && eventQuota < noOfEvents[index][thisMonth]) {
+                    return NextResponse.json<APIResponse<string>>({ success: false, error: "[TestNix] Limit Reached!" });
+                }
+            }
+            else {
+                const eventQuota = 1000
+                if (eventQuota < noOfEvents[index][thisMonth]) {
+                    return NextResponse.json<APIResponse<string>>({ success: false, error: "[TestNix] Limit Reached!" });
+                }
+            }
+            noOfEvents[index][thisMonth]++;
+        }
+        else {
+            noOfEvents.push({ [thisMonth]: 1 });
         }
     }
     else {
-        const eventQuota = 1000
-        if (eventQuota < hashData?.noOfEvents) {
-            return NextResponse.json<APIResponse<string>>({ success: false, error: "[TestNix] Limit Reached!" });
-        }
+        noOfEvents = [{ [thisMonth]: 1 }];
     }
 
     let variantId = variantIds[Math.floor(Math.random() * variantIds.length)];
@@ -98,7 +116,7 @@ export async function POST(request: NextRequest) {
         conversions: variant?.conversions ? variant?.conversions : [],
     })
     await adminDb.collection("experiment-hashes").doc(hash).update({
-        noOfEvents: hashData?.noOfEvents + 1
+        noOfEvents: noOfEvents
     })
 
     return NextResponse.json<APIResponse<string>>({ success: true, data: variantId });
