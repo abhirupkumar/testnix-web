@@ -58,8 +58,8 @@ export default function Home() {
                   <Image
                     src='/experiment-preview.png'
                     alt='uploading preview'
-                    width={883}
-                    height={638}
+                    width={1580}
+                    height={1025}
                     quality={100}
                     className='bg-background rounded-xl lg:rounded-2xl'
                   />
