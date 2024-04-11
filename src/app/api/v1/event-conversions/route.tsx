@@ -1,7 +1,6 @@
 import { PLANS } from "@/config/stripe";
 import { adminDb } from "@/lib/firebase-admin";
 import { APIResponse } from "@/types";
-import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
