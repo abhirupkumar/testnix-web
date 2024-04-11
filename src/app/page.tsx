@@ -150,7 +150,7 @@ export default function Home() {
               <Image
                 src='/dashboard-preview.png'
                 alt='product preview'
-                width={2230}
+                width={2231}
                 height={1000}
                 quality={100}
                 className='bg-background rounded-xl lg:rounded-2xl'
