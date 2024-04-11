@@ -36,7 +36,6 @@ export default function Chart({ variants }: { variants: DocumentData[] }) {
         });
         newImps.sort((a, b) => a.date.localeCompare(b.date));
         setImpressions(newImps);
-        console.log(newImps)
     }, [variants]);
 
     return (
