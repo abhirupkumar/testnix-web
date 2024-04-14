@@ -40,6 +40,15 @@ const Navbar = async () => {
                                     Pricing
                                 </Link>
                                 <Link
+                                    href='https://testnix-docs.vercel.app'
+                                    target="_blank"
+                                    className={buttonVariants({
+                                        variant: 'ghost',
+                                        size: 'sm',
+                                    })}>
+                                    Documentation
+                                </Link>
+                                <Link
                                     href='/sign-in'
                                     className={buttonVariants({
                                         variant: 'ghost',
@@ -59,12 +68,13 @@ const Navbar = async () => {
                         ) : (
                             <>
                                 <Link
-                                    href='/contact'
+                                    href='https://testnix-docs.vercel.app'
+                                    target="_blank"
                                     className={buttonVariants({
                                         variant: 'ghost',
                                         size: 'sm',
                                     })}>
-                                    Contact
+                                    Documentation
                                 </Link>
                                 <Link
                                     href='/dashboard'

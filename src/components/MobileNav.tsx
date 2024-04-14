@@ -1,6 +1,5 @@
 'use client'
 
-// import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs/server'
 import { ArrowRight, Menu } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -45,6 +44,17 @@ const MobileNav = ({ isAuth }: { isAuth: boolean }) => {
                                         <ArrowRight className='ml-2 h-5 w-5' />
                                     </Link>
                                 </li>
+                                <li>
+                                    <Link
+                                        onClick={() =>
+                                            closeOnCurrent('https://testnix-docs.vercel.app/')
+                                        }
+                                        className='flex items-center w-full font-semibold'
+                                        target='_blank'
+                                        href='https://testnix-docs.vercel.app'>
+                                        Documentation
+                                    </Link>
+                                </li>
                                 <li className='my-3 h-px w-full bg-gray-300' />
                                 <li>
                                     <Link
@@ -73,6 +83,17 @@ const MobileNav = ({ isAuth }: { isAuth: boolean }) => {
                                 <li>
                                     <Link
                                         onClick={() =>
+                                            closeOnCurrent('https://testnix-docs.vercel.app/')
+                                        }
+                                        className='flex items-center w-full font-semibold'
+                                        target='_blank'
+                                        href='https://testnix-docs.vercel.app'>
+                                        Documentation
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        onClick={() =>
                                             closeOnCurrent('/dashboard')
                                         }
                                         className='flex items-center w-full font-semibold'
@@ -81,26 +102,12 @@ const MobileNav = ({ isAuth }: { isAuth: boolean }) => {
                                     </Link>
                                 </li>
                                 <li className='my-1 h-px w-full bg-gray-300' />
-                                <li>
-                                    <Link
-                                        onClick={() =>
-                                            closeOnCurrent('/contact')
-                                        }
-                                        className='flex items-center w-full font-semibold'
-                                        href='/contact'>
-                                        Contact
-                                    </Link>
-                                </li>
                                 <li className='my-1 h-px w-full bg-gray-300' />
                                 <li>
                                     <div
                                         className='flex items-center w-full font-semibold'>
                                         Sign out
                                     </div>
-                                    {/* <LogoutLink
-                                        className='flex items-center w-full font-semibold'>
-                                        Sign out
-                                    </LogoutLink> */}
                                 </li>
                             </>
                         )}
