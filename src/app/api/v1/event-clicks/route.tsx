@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         ? PLANS.find((plan) => plan.price.priceIds.test === userData?.stripePriceId)
         : null
     const thisMonth = (new Date()).toISOString().split('-').slice(0, 2).join('-');
-    let noOfEvents = hashData?.noOfEvents;
+    let noOfEvents = userData?.noOfEvents;
     if (noOfEvents) {
         const index: number = noOfEvents.findIndex((obj: any) => obj.hasOwnProperty(thisMonth));
         if (index !== -1) {
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         clicks: clicks,
         conversions: variant?.conversions ? variant?.conversions : [],
     })
-    await adminDb.collection("experiment-hashes").doc(hash).update({
+    await adminDb.collection("users").doc(hashData?.userId).update({
         noOfEvents: noOfEvents
     })
 
