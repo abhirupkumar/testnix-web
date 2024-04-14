@@ -15,7 +15,7 @@ import { BarList } from '@tremor/react';
 const Experiment = ({ user, experimentId, experimentData }: {
     user: UserRecord,
     experimentId: string,
-    experimentData: DocumentData | undefined
+    experimentData: DocumentData | undefined,
 }) => {
 
     const [loading, setLoading] = useState<Boolean>(true);
@@ -182,7 +182,7 @@ const Experiment = ({ user, experimentId, experimentData }: {
                     </Card>
                 </div>
             </TooltipProvider>
-            <Chart variants={variants} />
+            <Chart variants={variants} experiment={experiment} />
         </MaxWidthWrapper >
     )
 }
