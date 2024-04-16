@@ -15,12 +15,12 @@ export default function Home() {
         </div>
         <h1 className='max-w-4xl text-5xl font-bold md:text-6xl lg:text-7xl'>
           Split Testing for{' '}
-          <span className='text-transparent bg-clip-text bg-gradient-to-r from-[#FD9248] via-[#FA1768] to-[#F001FF]'>Developers</span>
+          <span className='text-transparent bg-clip-text bg-gradient-to-r from-[#FD9248] via-[#FA1768] to-[#F001FF]'>Next.js</span> Developers
         </h1>
         <p className="mt-6 text-lg leading-8 text-gray-300">Set up TestNix within 5 minutes to get:</p>
         <ul className='ml-2 py-2 text-lg font-semibold leading-8 text-zinc-300 flex flex-col'>
           <li className="flex items-end mr-auto space-x-1"><Check className="text-[#FA1768]" /><p>Higher newsletter sign-ups</p></li>
-          <li className="flex items-end mr-auto space-x-1"><Check className="text-[#FA1768]" /><p>Increased recruiter engagement from your portfolio</p></li>
+          <li className="flex items-end mr-auto space-x-1"><Check className="text-[#FA1768]" /><p>Increased recruiter engagement in your portfolio</p></li>
           <li className="flex items-end mr-auto space-x-1"><Check className="text-[#FA1768]" /><p>A surge in customers on your paid SaaS-plan</p></li>
         </ul>
         <p className="text-lg leading-8 text-gray-300">Leverage Data-driven Experimentation To Win In The Subscription Economy</p>
@@ -57,9 +57,9 @@ export default function Home() {
                 <div className='-m-2 rounded-xl bg-gray-500/25 p-1.5 ring-2 ring-inset ring-gray-900/20 lg:-m-4 lg:rounded-2xl lg:p-3'>
                   <Image
                     src='/experiment-preview.png'
-                    alt='uploading preview'
-                    width={1580}
-                    height={1025}
+                    alt='experiment preview'
+                    width={1366}
+                    height={836}
                     quality={100}
                     className='bg-background rounded-xl lg:rounded-2xl'
                   />
@@ -149,9 +149,9 @@ export default function Home() {
             <div className='-m-2 rounded-xl bg-gray-500/25 p-1.5 ring-1 ring-inset ring-gray-900/20 lg:-m-4 lg:rounded-2xl lg:p-3'>
               <Image
                 src='/dashboard-preview.png'
-                alt='product preview'
+                alt='dashboard preview'
                 width={1366}
-                height={641}
+                height={582}
                 quality={100}
                 className='bg-background rounded-xl lg:rounded-2xl'
               />

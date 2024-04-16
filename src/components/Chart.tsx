@@ -48,6 +48,31 @@ export default function Chart({ variants, experiment }: { variants: DocumentData
         setImpressions(arrayImps);
     }, [variants]);
 
+    const customTooltip = (props: any) => {
+        const { payload, active } = props;
+        if (!active || !payload) return null;
+        return (
+            <div className="w-56 rounded-tremor-default border border-tremor-border bg-tremor-background p-2 text-tremor-default shadow-tremor-dropdown">
+                <div className="text-black">{payload[0].payload.date}</div>
+                {payload.map((category: any, idx: any) => {
+                    return <div key={idx} className="flex flex-1 space-x-2.5 items-center">
+                        <div
+                            className={`flex w-2 h-2 bg-${category.color}-400 rounded`}
+                        />
+                        <div className="flex space-x-1">
+                            <p className="text-tremor-content">{category.dataKey}</p>
+                            :
+                            <p className={`font-medium text-${category.color}-400`}>
+                                {category.value as number}
+                            </p>
+                        </div>
+                    </div>
+                })}
+            </div>
+        );
+    }
+
+
     return (
         <Card className="w-full mt-6">
             <CardHeader>
@@ -60,6 +85,7 @@ export default function Chart({ variants, experiment }: { variants: DocumentData
                     categories={variants.map(variant => variant.name)}
                     colors={colorsArray.filter((color, index) => index < variants.length)}
                     yAxisWidth={60}
+                    customTooltip={customTooltip}
                 />
             </CardContent>
         </Card>
