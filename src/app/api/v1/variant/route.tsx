@@ -1,6 +1,5 @@
 import { PLANS } from "@/config/stripe";
 import { adminDb } from "@/lib/firebase-admin";
-import { APIResponse } from "@/types";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,17 +7,17 @@ export async function POST(request: NextRequest) {
     const reqBody = await request.json();
     const { hash, experimentId, variantIds } = reqBody;
     if (!hash || !experimentId || !variantIds)
-        return NextResponse.json<APIResponse<string>>({ success: false, error: "Invalid request." });
+        return NextResponse.json({ success: false, error: "Invalid request." }, { status: 400 });
 
     // check if the experiment exists
     const hashDoc = await adminDb.collection("experiment-hashes").doc(hash).get();
     if (!hashDoc.exists) {
-        return NextResponse.json<APIResponse<string>>({ success: false, error: "Experiment Not Found." });
+        return NextResponse.json({ success: false, error: "Experiment Not Found." }, { status: 401 });
     }
     const hashData = hashDoc.data();
     const userDoc = await adminDb.collection("users").doc(hashData?.userId).get();
     if (!userDoc.exists && !!userDoc.data()) {
-        return NextResponse.json<APIResponse<string>>({ success: false, error: "Experiment Not Found." });
+        return NextResponse.json({ success: false, error: "Experiment Not Found." }, { status: 403 });
     }
     const userData = userDoc.data();
     // check if the experiment user is subscribed or not
@@ -40,13 +39,13 @@ export async function POST(request: NextRequest) {
             if (isSubscribed) {
                 const eventQuota = plan?.eventQuota as number
                 if (eventQuota < 60000 && eventQuota < noOfEvents[index][thisMonth]) {
-                    return NextResponse.json<APIResponse<string>>({ success: false, error: "[TestNix] Limit Reached!" });
+                    return NextResponse.json({ success: false, error: "[TestNix] Limit Reached!" }, { status: 409 });
                 }
             }
             else {
                 const eventQuota = 1000
                 if (eventQuota < noOfEvents[index][thisMonth]) {
-                    return NextResponse.json<APIResponse<string>>({ success: false, error: "[TestNix] Limit Reached!" });
+                    return NextResponse.json({ success: false, error: "[TestNix] Limit Reached!" }, { status: 429 });
                 }
             }
             noOfEvents[index][thisMonth]++;
@@ -119,5 +118,5 @@ export async function POST(request: NextRequest) {
         noOfEvents: noOfEvents
     })
 
-    return NextResponse.json<APIResponse<string>>({ success: true, data: variantId });
+    return NextResponse.json({ success: true, data: variantId }, { status: 200 });
 }

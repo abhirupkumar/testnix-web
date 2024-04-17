@@ -27,6 +27,7 @@ export default function Chart({ variants, experiment }: { variants: DocumentData
             dates.push(currentDate.toISOString().split("T")[0]);
             currentDate.setDate(currentDate.getDate() + 1);
         }
+        if (!dates.includes(today.toISOString().split("T")[0])) dates.push(today.toISOString().split("T")[0]);
         let newImps: any = {};
         dates.forEach(date => {
             allVariants.forEach(variant => {
