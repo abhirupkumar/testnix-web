@@ -7,15 +7,15 @@ export async function POST(request: NextRequest) {
     const reqBody = await request.json();
     const { hash, experimentId, variantId } = reqBody;
     if (!hash || !experimentId || !variantId)
-        return NextResponse.json({ success: false, error: "Invalid request." }, { status: 400 });
+        return NextResponse.json({ success: false, error: "Invalid request." }, { status: 200 });
     const hashDoc = await adminDb.collection("experiment-hashes").doc(hash).get();
     if (!hashDoc.exists) {
-        return NextResponse.json({ success: false, error: "Experiment Not Found." }, { status: 401 });
+        return NextResponse.json({ success: false, error: "Experiment Not Found." }, { status: 200 });
     }
     const hashData = hashDoc.data();
     const userDoc = await adminDb.collection("users").doc(hashData?.userId).get();
     if (!userDoc.exists && !!userDoc.data()) {
-        return NextResponse.json({ success: false, error: "Experiment Not Found." }, { status: 403 });
+        return NextResponse.json({ success: false, error: "Experiment Not Found." }, { status: 200 });
     }
     const userData = userDoc.data();
     const isSubscribed = Boolean(
@@ -34,13 +34,13 @@ export async function POST(request: NextRequest) {
             if (isSubscribed) {
                 const eventQuota = plan?.eventQuota as number
                 if (eventQuota < 60000 && eventQuota < noOfEvents[index][thisMonth]) {
-                    return NextResponse.json({ success: false, error: "[TestNix] Limit Reached!" }, { status: 409 });
+                    return NextResponse.json({ success: false, error: "[TestNix] Limit Reached!" }, { status: 200 });
                 }
             }
             else {
                 const eventQuota = 1000
                 if (eventQuota < noOfEvents[index][thisMonth]) {
-                    return NextResponse.json({ success: false, error: "[TestNix] Limit Reached!" }, { status: 429 });
+                    return NextResponse.json({ success: false, error: "[TestNix] Limit Reached!" }, { status: 200 });
                 }
             }
             noOfEvents[index][thisMonth]++;
