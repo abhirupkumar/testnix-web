@@ -79,3 +79,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: "Clicks recorded." }, { status: 200 });
 }
+
+export const OPTIONS = async (request: NextRequest) => {
+    return new NextResponse('', {
+        status: 200
+    })
+}
