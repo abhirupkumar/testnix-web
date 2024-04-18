@@ -9,8 +9,13 @@ import { db } from '@/lib/firebase';
 import { Code2, MessageSquare, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { absoluteUrl } from '@/lib/utils';
+import { getUserSubscriptionPlan } from '@/lib/stripe';
 
-const Dashboard = ({ user }: { user: UserRecord }) => {
+const Dashboard = ({ user, subscriptionPlan }: {
+  user: UserRecord, subscriptionPlan: Awaited<
+    ReturnType<typeof getUserSubscriptionPlan>
+  >
+}) => {
 
   const [experiments, setExperiments] = useState<DocumentData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -37,9 +42,17 @@ const Dashboard = ({ user }: { user: UserRecord }) => {
         <h1 className='font-bold text-4xl text-gray-50'>
           My Experiments
         </h1>
-        <CreateExperimentButton user={user} />
+        <CreateExperimentButton user={user} subscriptionPlan={subscriptionPlan} />
       </div>
 
+      {/* if subscriptionPlan.isEventQuotaReached is true then show a red message that limit has reached no more events will be shown */}
+      {subscriptionPlan.isEventQuotaReached && (
+        <div className='mt-4 bg-red-500 text-white p-4 rounded-md'>
+          You have reached your event limit. No more events will be shown. Please <Link href='/dashboard/billing' className="underline">
+            Upgrade
+          </Link>
+        </div>
+      )}
       {/* display all user files */}
       {experiments && experiments?.length !== 0 ? (
         <ul className='mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>

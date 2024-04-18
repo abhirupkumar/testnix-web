@@ -10,6 +10,8 @@ import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { UserRecord } from 'firebase-admin/auth';
 import { db } from '@/lib/firebase';
 import { v4 as uuidv4 } from 'uuid';
+import { getUserSubscriptionPlan } from '@/lib/stripe';
+import Link from 'next/link';
 
 async function generateHashId() {
   const randomString = Math.random().toString(36).substring(2, 14);
@@ -99,9 +101,14 @@ const ExperimentForm = ({ user, setIsOpen }: { user: UserRecord, setIsOpen: Reac
   </TooltipProvider>);
 }
 
-const CreateExperimentButton = ({ user }: { user: UserRecord }) => {
+const CreateExperimentButton = ({ user, subscriptionPlan }: {
+  user: UserRecord, subscriptionPlan: Awaited<
+    ReturnType<typeof getUserSubscriptionPlan>
+  >
+}) => {
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const text: string = subscriptionPlan.name === "Free" ? "On a Free Plan you can create upto 3 Experiments! Upgrade to a paid plan to create more experiments" : subscriptionPlan.isCanceled !== false ? "Your plan has expired!" : "You have reached the limit of experiments you can create in your current plan. Upgrade to create more experiments."
 
   return (
     <div>
@@ -118,9 +125,27 @@ const CreateExperimentButton = ({ user }: { user: UserRecord }) => {
           <Button>Create Experiment</Button>
         </DialogTrigger>
         <DialogContent>
-          <ExperimentForm user={user} setIsOpen={setIsOpen} />
+          {!subscriptionPlan.isExpQuotaReached ? <ExperimentForm user={user} setIsOpen={setIsOpen} />
+            :
+            <UserNotSubscribedForm text={text} />}
         </DialogContent>
       </Dialog>
+    </div>
+  )
+}
+
+const UserNotSubscribedForm = ({ text }: { text: string }) => {
+  return (
+    <div className="flex flex-col space-y-1.5 text-center sm:text-left rounded-t-md bg-zinc-800">
+      <div className="flex flex-col items-center text-center justify-center space-y-3 border-b border-gray-100 px-4 py-4 pt-8 sm:px-16">
+        <img src="/logo.svg" alt="logo" className='h-14 w-14' />
+        <h3 className="text-lg text-center font-medium">{text}</h3>
+        <Link href='/dashboard/billing' className={buttonVariants({
+          size: 'sm',
+        })}>
+          Manage Subscription
+        </Link>
+      </div>
     </div>
   )
 }
