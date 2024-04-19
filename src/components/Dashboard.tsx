@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import CreateExperimentButton from './CreateExperimentButton';
 import { UserRecord } from 'firebase-admin/auth';
-import { DocumentData, collection, doc, onSnapshot, query } from 'firebase/firestore';
+import { DocumentData, collection, doc, getDoc, onSnapshot, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Code2, MessageSquare, Plus } from 'lucide-react';
 import Link from 'next/link';
@@ -12,13 +12,16 @@ import { absoluteUrl } from '@/lib/utils';
 import { getUserSubscriptionPlan } from '@/lib/stripe';
 
 const Dashboard = ({ user, subscriptionPlan }: {
-  user: UserRecord, subscriptionPlan: Awaited<
+  user: UserRecord,
+  subscriptionPlan: Awaited<
     ReturnType<typeof getUserSubscriptionPlan>
   >
 }) => {
 
   const [experiments, setExperiments] = useState<DocumentData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [noOfExperiments, setNoOfExperiments] = useState<number>(0);
+  const [isEventQuotaReached, setIsEventQuotaReached] = useState<boolean>(false);
 
   useEffect(() => {
     const userRef = doc(collection(db, 'users'), user.uid);
@@ -28,13 +31,37 @@ const Dashboard = ({ user, subscriptionPlan }: {
         exps.push(doc.data());
       });
       setExperiments(exps);
+      setNoOfExperiments(exps.length);
+      fetchData();
       setLoading(false);
     });
-
     return () => {
       unsubscribe();
     };
   }, []);
+
+  const fetchData = async () => {
+    const thisMonth = (new Date()).toISOString().split('-').slice(0, 2).join('-');
+    const dbDoc = await getDoc(doc(collection(db, 'users'), user.uid));
+    if (!dbDoc.exists()) {
+      return;
+    }
+    const dbUser = dbDoc.data();
+    let noOfEvents = dbUser?.noOfEvents;
+    const index: number = noOfEvents.findIndex((obj: any) => obj.hasOwnProperty(thisMonth));
+    if (subscriptionPlan.isSubscribed) {
+      const eventQuota = subscriptionPlan?.eventQuota as number
+      if (eventQuota < 60000 && eventQuota <= noOfEvents[index][thisMonth]) {
+        setIsEventQuotaReached(true);
+      }
+    }
+    else {
+      const eventQuota = 1000
+      if (eventQuota <= noOfEvents[index][thisMonth]) {
+        setIsEventQuotaReached(true);
+      }
+    }
+  }
 
   return (
     <main className='mx-auto max-w-7xl md:p-10 p-4'>
@@ -42,13 +69,20 @@ const Dashboard = ({ user, subscriptionPlan }: {
         <h1 className='font-bold text-4xl text-gray-50'>
           My Experiments
         </h1>
-        <CreateExperimentButton user={user} subscriptionPlan={subscriptionPlan} />
+        {!loading && <CreateExperimentButton user={user} subscriptionPlan={subscriptionPlan} noOfExps={noOfExperiments} />}
       </div>
 
-      {/* if subscriptionPlan.isEventQuotaReached is true then show a red message that limit has reached no more events will be shown */}
-      {subscriptionPlan.isEventQuotaReached && (
+      {/* if isEventQuotaReached is true then show a red message that limit has reached no more events will be shown */}
+      {!loading && subscriptionPlan.isCanceled && (
         <div className='mt-4 bg-red-500 text-white p-4 rounded-md'>
-          You have reached your event limit. No more events will be shown. Please <Link href='/dashboard/billing' className="underline">
+          Your Current plan has expired. <Link href='/dashboard/billing' className="underline">
+            Manage Subscription
+          </Link>
+        </div>
+      )}
+      {!loading && isEventQuotaReached && (
+        <div className='mt-4 bg-red-500 text-white p-4 rounded-md'>
+          You have reached your event limit. No more events will be updated. Please <Link href='/dashboard/billing' className="underline">
             Upgrade
           </Link>
         </div>

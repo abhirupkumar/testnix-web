@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
                     {
                         price: PLANS.find(
                             (plan) => plan.name === planName
-                        )?.price.priceIds.test,
+                        )?.price.priceIds.production,
                         quantity: 1,
                     },
                 ],

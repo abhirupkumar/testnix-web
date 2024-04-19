@@ -17,8 +17,6 @@ export async function getUserSubscriptionPlan() {
             isSubscribed: false,
             isCanceled: false,
             stripeCurrentPeriodEnd: null,
-            isEventQuotaReached: false,
-            isExpQuotaReached: false,
         }
     }
 
@@ -28,8 +26,6 @@ export async function getUserSubscriptionPlan() {
             isSubscribed: false,
             isCanceled: false,
             stripeCurrentPeriodEnd: null,
-            isEventQuotaReached: false,
-            isExpQuotaReached: false
         }
     }
 
@@ -41,8 +37,6 @@ export async function getUserSubscriptionPlan() {
             isSubscribed: false,
             isCanceled: false,
             stripeCurrentPeriodEnd: null,
-            isEventQuotaReached: false,
-            isExpQuotaReached: false
         }
     }
 
@@ -54,7 +48,7 @@ export async function getUserSubscriptionPlan() {
     )
 
     const plan = isSubscribed
-        ? PLANS.find((plan) => plan.price.priceIds.test === dbUser.stripePriceId)
+        ? PLANS.find((plan) => plan.price.priceIds.production === dbUser.stripePriceId)
         : null
 
     let isCanceled = false
@@ -65,39 +59,12 @@ export async function getUserSubscriptionPlan() {
         isCanceled = stripePlan.cancel_at_period_end
     }
 
-    let isEventQuotaReached = false;
-    const thisMonth = (new Date()).toISOString().split('-').slice(0, 2).join('-');
-    let noOfEvents = dbUser?.noOfEvents;
-    const index: number = noOfEvents.findIndex((obj: any) => obj.hasOwnProperty(thisMonth));
-    if (isSubscribed) {
-        const eventQuota = plan?.eventQuota as number
-        if (eventQuota < 60000 && eventQuota < noOfEvents[index][thisMonth]) {
-            isEventQuotaReached = true;
-        }
-    }
-    else {
-        const eventQuota = 1000
-        if (eventQuota < noOfEvents[index][thisMonth]) {
-            isEventQuotaReached = true;
-        }
-    }
-
-    let isExpQuotaReached = false;
-    const expRef = await adminDb.collection('users').doc(user.uid).collection('experiments').get();
-    if (expRef.size) {
-        if ((plan?.expQuota as number) <= expRef.size) {
-            isExpQuotaReached = true;
-        }
-    }
-
     return {
         ...plan,
-        stripeSubscriptionId: dbUser.stripeSubscriptionId as string,
-        stripeCurrentPeriodEnd: dbUser.stripeCurrentPeriodEnd.toDate(),
-        stripeCustomerId: dbUser.stripeCustomerId as string,
+        stripeSubscriptionId: dbUser.stripeSubscriptionId ? dbUser.stripeSubscriptionId as string : null,
+        stripeCurrentPeriodEnd: dbUser.stripeCurrentPeriodEnd ? dbUser.stripeCurrentPeriodEnd.toDate() : null,
+        stripeCustomerId: dbUser.stripeCustomerId ? dbUser.stripeCustomerId as string : null,
         isSubscribed,
         isCanceled,
-        isEventQuotaReached: isEventQuotaReached,
-        isExpQuotaReached: isExpQuotaReached
     }
 }

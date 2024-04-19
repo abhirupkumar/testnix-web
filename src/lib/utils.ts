@@ -45,6 +45,9 @@ export function constructMetadata({
         index: false,
         follow: false
       }
-    })
+    }),
+    other: {
+      "google-site-verification": "co0B-CYrqRdI_fmi2ySiu2nYjJd2Wq8Db9ESsAv_uZE"
+    }
   }
 }

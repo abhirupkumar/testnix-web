@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import MaxWidthWrapper from './MaxWidthWrapper';
 import { UserRecord } from 'firebase-admin/auth';
-import { DocumentData, collection, doc, onSnapshot, query, where } from 'firebase/firestore';
+import { DocumentData, collection, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
@@ -11,11 +11,14 @@ import { Copy, CopyCheck, HelpCircleIcon, Loader2 } from 'lucide-react';
 import Chart from './Chart';
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { BarList } from '@tremor/react';
+import Link from 'next/link';
+import { getUserSubscriptionPlan } from '@/lib/stripe';
 
-const Experiment = ({ user, experimentId, experimentData }: {
+const Experiment = ({ user, experimentId, experimentData, subscriptionPlan }: {
     user: UserRecord,
     experimentId: string,
     experimentData: DocumentData | undefined,
+    subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>
 }) => {
 
     const [loading, setLoading] = useState<Boolean>(true);
@@ -25,17 +28,42 @@ const Experiment = ({ user, experimentId, experimentData }: {
     const [impressions, setImpressions] = useState<{ name: string; value: number; }[]>([]);
     const [clicks, setClicks] = useState<{ name: string; value: number; }[]>([]);
     const [conversions, setConversions] = useState<{ name: string; value: number; }[]>([]);
+    const [isEventQuotaReached, setIsEventQuotaReached] = useState<boolean>(false);
 
     useEffect(() => {
         const userRef = doc(collection(db, 'users'), user.uid);
         const unsubscribe = onSnapshot(query(collection(userRef, 'experiments'), where("experimentId", "==", experimentId)), (snapshot) => {
             setExperiment(snapshot.docs[0].data());
+            fetchData();
         });
 
         return () => {
             unsubscribe();
         };
     }, []);
+
+    const fetchData = async () => {
+        const thisMonth = (new Date()).toISOString().split('-').slice(0, 2).join('-');
+        const dbDoc = await getDoc(doc(collection(db, 'users'), user.uid));
+        if (!dbDoc.exists()) {
+            return;
+        }
+        const dbUser = dbDoc.data();
+        let noOfEvents = dbUser?.noOfEvents;
+        const index: number = noOfEvents.findIndex((obj: any) => obj.hasOwnProperty(thisMonth));
+        if (subscriptionPlan.isSubscribed) {
+            const eventQuota = subscriptionPlan?.eventQuota as number
+            if (eventQuota < 60000 && eventQuota <= noOfEvents[index][thisMonth]) {
+                setIsEventQuotaReached(true);
+            }
+        }
+        else {
+            const eventQuota = 1000
+            if (eventQuota <= noOfEvents[index][thisMonth]) {
+                setIsEventQuotaReached(true);
+            }
+        }
+    }
 
     useEffect(() => {
         const expRef = doc(collection(db, 'experiment-hashes'), experiment?.hash);
@@ -97,6 +125,20 @@ const Experiment = ({ user, experimentId, experimentData }: {
 
     return (
         <MaxWidthWrapper>
+            {subscriptionPlan.isCanceled && (
+                <div className='mt-4 bg-red-500 text-white p-4 rounded-md'>
+                    Your Current plan has expired. <Link href='/dashboard/billing' className="underline">
+                        Manage Subscription
+                    </Link>
+                </div>
+            )}
+            {isEventQuotaReached && (
+                <div className='mt-4 bg-red-500 text-white p-4 rounded-md'>
+                    You have reached your event limit. No more events will be updated. Please <Link href='/dashboard/billing' className="underline">
+                        Upgrade
+                    </Link>
+                </div>
+            )}
             <div className='mb-4 mt-10 flex flex-wrap items-center justify-between'>
                 <h1 className="text-4xl">Insights for <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FD9248] via-[#FA1768] to-[#F001FF]">{experimentId}</span></h1>
                 <div className='flex items-center'>

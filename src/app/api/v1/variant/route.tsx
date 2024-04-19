@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         (userData?.stripeCurrentPeriodEnd.toDate()).getTime() + 86_400_000 > Date.now()
     )
     const plan = isSubscribed
-        ? PLANS.find((plan) => plan.price.priceIds.test === userData?.stripePriceId)
+        ? PLANS.find((plan) => plan.price.priceIds.production === userData?.stripePriceId)
         : null
 
     //check the event limit is exceed or not
@@ -38,13 +38,13 @@ export async function POST(request: NextRequest) {
         if (index !== -1) {
             if (isSubscribed) {
                 const eventQuota = plan?.eventQuota as number
-                if (eventQuota < 60000 && eventQuota < noOfEvents[index][thisMonth]) {
+                if (eventQuota < 60000 && eventQuota <= noOfEvents[index][thisMonth]) {
                     return NextResponse.json({ success: false, error: "[TestNix] Limit Reached!" }, { status: 409 });
                 }
             }
             else {
                 const eventQuota = 1000
-                if (eventQuota < noOfEvents[index][thisMonth]) {
+                if (eventQuota <= noOfEvents[index][thisMonth]) {
                     return NextResponse.json({ success: false, error: "[TestNix] Limit Reached!" }, { status: 429 });
                 }
             }
@@ -114,9 +114,14 @@ export async function POST(request: NextRequest) {
         clicks: variant?.clicks ? variant?.clicks : [],
         conversions: variant?.conversions ? variant?.conversions : [],
     })
-    await adminDb.collection("users").doc(hashData?.userId).update({
-        noOfEvents: noOfEvents
-    })
+    if (!!userData?.noOfEvents)
+        await adminDb.collection("users").doc(hashData?.userId).update({
+            noOfEvents: noOfEvents
+        })
+    else
+        await adminDb.collection("users").doc(hashData?.userId).set({
+            noOfEvents: noOfEvents
+        })
 
     return NextResponse.json({ success: true, data: variantId }, { status: 200 });
 }

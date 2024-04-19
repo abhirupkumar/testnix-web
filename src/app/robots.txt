@@ -15,14 +15,14 @@ Crawl-delay: 10
 Disallow: /dashboard
 Disallow: /dashboard/*
 Disallow: /dashboard/billing
-Sitemap: https://splitest.live/sitemap.xml
+Sitemap: https://testnix.vercel.app/sitemap.xml
 
 User-agent: AhrefsSiteAudit
 Crawl-delay: 10
 Disallow: /dashboard
 Disallow: /dashboard/*
 Disallow: /dashboard/billing
-Sitemap: https://splitest.live/sitemap.xml
+Sitemap: https://testnix.vercel.app/sitemap.xml
 
 User-agent: MJ12bot
 Crawl-Delay: 10

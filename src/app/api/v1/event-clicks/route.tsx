@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
         (userData?.stripeCurrentPeriodEnd.toDate()).getTime() + 86_400_000 > Date.now()
     )
     const plan = isSubscribed
-        ? PLANS.find((plan) => plan.price.priceIds.test === userData?.stripePriceId)
+        ? PLANS.find((plan) => plan.price.priceIds.production === userData?.stripePriceId)
         : null
     const thisMonth = (new Date()).toISOString().split('-').slice(0, 2).join('-');
     let noOfEvents = userData?.noOfEvents;
@@ -33,13 +33,13 @@ export async function POST(request: NextRequest) {
         if (index !== -1) {
             if (isSubscribed) {
                 const eventQuota = plan?.eventQuota as number
-                if (eventQuota < 60000 && eventQuota < noOfEvents[index][thisMonth]) {
+                if (eventQuota < 60000 && eventQuota <= noOfEvents[index][thisMonth]) {
                     return NextResponse.json({ success: false, error: "[TestNix] Limit Reached!" }, { status: 409 });
                 }
             }
             else {
                 const eventQuota = 1000
-                if (eventQuota < noOfEvents[index][thisMonth]) {
+                if (eventQuota <= noOfEvents[index][thisMonth]) {
                     return NextResponse.json({ success: false, error: "[TestNix] Limit Reached!" }, { status: 429 });
                 }
             }

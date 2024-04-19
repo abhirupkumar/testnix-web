@@ -101,14 +101,22 @@ const ExperimentForm = ({ user, setIsOpen }: { user: UserRecord, setIsOpen: Reac
   </TooltipProvider>);
 }
 
-const CreateExperimentButton = ({ user, subscriptionPlan }: {
-  user: UserRecord, subscriptionPlan: Awaited<
+const CreateExperimentButton = ({ user, subscriptionPlan, noOfExps }: {
+  user: UserRecord,
+  subscriptionPlan: Awaited<
     ReturnType<typeof getUserSubscriptionPlan>
-  >
+  >,
+  noOfExps: number
 }) => {
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const text: string = subscriptionPlan.name === "Free" ? "On a Free Plan you can create upto 3 Experiments! Upgrade to a paid plan to create more experiments" : subscriptionPlan.isCanceled !== false ? "Your plan has expired!" : "You have reached the limit of experiments you can create in your current plan. Upgrade to create more experiments."
+  let text: string = "";
+  if (subscriptionPlan.name == "Free" || !subscriptionPlan.name) {
+    text = "You have reached the limit of 3 experiments. Please upgrade your subscription to create more experiments.";
+  }
+  else if (subscriptionPlan.name == "Pro") {
+    text = `You have reached the limit of ${subscriptionPlan.expQuota} experiments. Please upgrade your subscription to create more experiments.`;
+  }
 
   return (
     <div>
@@ -125,9 +133,7 @@ const CreateExperimentButton = ({ user, subscriptionPlan }: {
           <Button>Create Experiment</Button>
         </DialogTrigger>
         <DialogContent>
-          {!subscriptionPlan.isExpQuotaReached ? <ExperimentForm user={user} setIsOpen={setIsOpen} />
-            :
-            <UserNotSubscribedForm text={text} />}
+          {((subscriptionPlan.name == "Bussiness") || (subscriptionPlan.name == "Pro" && (subscriptionPlan.expQuota as number) > noOfExps) || (subscriptionPlan.name == "Free" && noOfExps < 3)) ? <ExperimentForm user={user} setIsOpen={setIsOpen} /> : <UserNotSubscribedForm text={text} />}
         </DialogContent>
       </Dialog>
     </div>
