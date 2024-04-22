@@ -18,17 +18,20 @@ export function constructMetadata({
   description = "TestNix is an SaaS application that helps you to track your A/B tests and make data-driven decisions.",
   image = "/thumbnail.png",
   icons = "/favicon.ico",
-  noIndex = false
+  noIndex = false,
+  keywords = ['testing', 'split', 'ab', 'experiments', 'variants', 'analytics', 'clicks', 'conversions', 'impressions']
 }: {
   title?: string
   description?: string
   image?: string
   icons?: string
-  noIndex?: boolean
+  noIndex?: boolean,
+  keywords?: string[]
 } = {}): Metadata {
   return {
     title,
     description,
+    keywords,
     openGraph: {
       title,
       description,
